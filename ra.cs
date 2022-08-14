@@ -12,17 +12,7 @@ using System.Drawing;
 
 namespace WinFormsApp5
 {
-    public struct Vector
-    {
-        public float _x;
-        public float _y;
-        public Vector(float x, float y)
-        {
-            _x = x;
-            _y = y;
-        }
-    }
-
+    
     public struct vf2d
     {
         public float x;
@@ -58,6 +48,13 @@ namespace WinFormsApp5
         }
             
     }
+    
+    public float Dist(float ax, float ay, float bx, float by, float ang)
+    {
+            return (MathF.Sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay)));
+    }
+
+     
 
     public partial class Form1 : Form
     {
@@ -127,180 +124,7 @@ namespace WinFormsApp5
             }
         }
 
-        public float Dist(float ax, float ay, float bx, float by, float ang)
-        {
-            return (MathF.Sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay)));
-        }
-
-        public void DDAShot(Graphics g)
-        {
-            Vector rayUnitStepSize = new Vector(MathF.Sqrt(1 + (pdy / pdx) * (pdy / pdx)), MathF.Sqrt(1 + (pdx / pdy) * (pdx / pdy)));
-            Vector mapCheck = new Vector(px, py);
-            Vector raydir = new Vector(pdx, pdy);
-            Vector step;
-            Vector raylength1D;
-
-
-
-
-            if (raydir._x < 0)
-            {
-                step._x = -1;
-                //raylength1D._x = (px)
-            }
-            else
-            {
-                step._x = 1;
-            }
-
-            if (raydir._y < 0)
-            {
-                step._y = -1;
-            }
-            else
-            {
-                step._y = 1;
-            }
-
-        }
-
-        public void DrawRays3D(Graphics g)
-        {
-            int mx, my, mp, dof;
-            float rx, ry, ra, xo, yo, disT;
-
-            ra = pa-DR*30;
-            //ra = pa - DR;
-            if (ra < 0) { ra += 2 * PI; }
-            if (ra > 2 * PI) { ra -= 2 * PI; }
-
-            for (int r = 0; r < 1; r++)
-            {
-                //Horizontal Lines
-                dof = 0;
-                float disH = 1000000, hx = px, hy = py;
-                float aTan = -(1 / MathF.Tan(ra));
-                rx = pdx;
-                ry = pdy;
-                xo = 0;
-                yo = 0;
-
-
-                if (ra > PI) 
-                { 
-                    ry = (((int)py >> 6) << 6) - 0.001f; 
-                    rx = (py - ry) * aTan + px; 
-                    yo = -64; 
-                    xo = -yo * aTan; 
-                }
-                if (ra < PI)
-                { 
-                    ry = (((int)py >> 6) << 6) + 64f;    
-                    rx = (py - ry) * aTan + px; 
-                    yo =  64; 
-                    xo = -yo * aTan; }
-                if (ra == 0 || ra == PI) 
-                { 
-                    rx = px; 
-                    ry = py;
-                    dof = 8; 
-                }
-
-
-                while (dof < 8)
-                {
-                    mx = (int)(rx) >> 6; 
-                    my = (int)(ry) >> 6; 
-                    mp = my * mapX + mx;
-                    g.FillEllipse(new SolidBrush(Color.Aqua), new Rectangle((int)rx - 5, (int)ry - 5, 10, 10));
-                    if (debug == true)
-                    {
-
-                    }
-                    if (mp >= 0 && mp < mapX * mapY && map[mp] == 1)
-                    {
-                        hx = rx;
-                        hy = ry;
-                        disH = Dist(px, py, hx, hy, ra);
-                        dof = 10;
-                    }
-                    else 
-                    {
-                        rx += xo; 
-                        ry += yo; 
-                        dof += 1;
-                    }
-                }
-
-                //g.DrawLine(new Pen(Color.Green, 3), px, py, rx, ry);
-
-                dof = 0;
-                float disV = 1000000, vx = px, vy = py;
-                float nTan = -MathF.Tan(ra);
-                rx = pdx;
-                ry = pdy;
-                xo = 0;
-                yo = 0;
-                //Look down
-                if (ra > P2 && ra < P3) { rx = ((((int)px) >> 6) << 6) - 0.00001f; ry = (px - rx) * nTan + py; xo = -64; yo = -xo * nTan; }
-                if (ra < P2 || ra > P3) { rx = ((((int)px) >> 6) << 6) + 64f; ry = (px - rx) * nTan + py; xo = 64; yo = -xo * nTan; }
-                if (ra == 0 || ra == PI) { rx = px; ry = py; dof = 8; }
-
-                while (dof < 8)
-                {
-                    
-                    
-                    mx = (int)(rx) >> 6; 
-                    my = (int)(ry) >> 6; 
-                    mp = my * mapX + mx;
-                    //g.FillEllipse(new SolidBrush(Color.Gold), new Rectangle((int)rx - 5, (int)ry - 5, 10, 10));
-                    if (mp >= 0 && mp < mapX * mapY && map[mp] == 1)
-                    {
-                        vx = rx;
-                        vy = ry;
-                        disV = Dist(px, py, vx, vy, ra);
-                        dof = 8;
-                    }
-                    else
-                    {
-                        rx += xo;
-                        ry += yo;
-                        dof += 1;
-                    }
-                }
-                Color color;
-                if (disV < disH) 
-                {                  
-                    rx = vx; 
-                    ry = vy; 
-                    disT = disV;
-                    color = Color.FromArgb((int)(0.9 * 255), 0, 0);
-                }
-                else
-                { 
-                    rx = hx; 
-                    ry = hy; 
-                    disT = disH;
-                    color = Color.FromArgb((int)(0.7 * 255), 0, 0);
-                }
-                g.DrawLine(new Pen(Color.Green, 1), px, py, rx, ry);
-
-                //Draw -- 3D
-                float ca = pa - ra; 
-                if (ca < 0) { ca += 2 * PI; } 
-                if (ca > 2 * PI) { ca -= 2 * PI; } 
-                disT = disT * MathF.Cos(ca);
-                float lineH = (MapS * 320) / disT; 
-                if (lineH>320) { lineH = 320; }
-                float lineO = 160 - lineH / 2;
-                Pen p = new Pen(color, 8);
-                g.DrawLine(p, r * 8 + 530, lineO, r * 8 + 530, lineH + lineO);
-                ra += DR;
-                if (ra < 0) { ra += 2 * PI; } if (ra > 2 * PI) { ra -= 2 * PI; }
-            }
-        }
-
-
+      
         public rayhit raycast(Graphics g, vf2d start, float radian, float maxdist)
         {
             float deltax = MathF.Cos(radian);
@@ -380,14 +204,7 @@ namespace WinFormsApp5
             return hit;
             
         }
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-        private void pictureBox1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-        }
-
+    
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
 
