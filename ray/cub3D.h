@@ -17,4 +17,9 @@ typedef struct s_raycast_hit
 	char type;
 }	t_racast_hit;
 
-
+typedef struct s_info
+{
+	int	width;
+	int	height;
+	char *map;
+}
