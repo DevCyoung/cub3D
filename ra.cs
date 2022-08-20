@@ -12,17 +12,6 @@ using System.Drawing;
 
 namespace WinFormsApp5
 {
-    public struct Vector
-    {
-        public float _x;
-        public float _y;
-        public Vector(float x, float y)
-        {
-            _x = x;
-            _y = y;
-        }
-    }
-
     public struct vf2d
     {
         public float x;
@@ -45,6 +34,22 @@ namespace WinFormsApp5
         }
     }
 
+    public struct box
+    {
+        public Bitmap bitmap;
+    }
+
+
+
+    public enum wall_dir
+    { 
+        NONE = 0,
+        EAST,
+        WESET,
+        NORTH,
+        SOUTH
+    }
+
     public struct rayhit
     {
         public float distH;
@@ -52,6 +57,10 @@ namespace WinFormsApp5
         public float dist;
         public bool hit;
         public int type;
+        public wall_dir wall;
+        public Color color;
+        public vf2d hitpoint;
+        public vi2d mapPoint;
         public rayhit(float distH, float distV)
         {
             this.distH = distH;
@@ -59,6 +68,10 @@ namespace WinFormsApp5
             this.dist = distH > distV ? distH : distV;
             this.hit = false;
             this.type = 1;
+            this.wall = wall_dir.NONE;
+            this.color = Color.White;
+            hitpoint = new vf2d(0, 0);
+            mapPoint = new vi2d(0, 0);
         }
             
     }
@@ -67,7 +80,6 @@ namespace WinFormsApp5
     {
 
         Rectangle _rect;
-        Vector dir = new Vector(0, 0);
         float px = 0f;
         float py = 0f;
         float pdx = 0f;
@@ -92,21 +104,30 @@ namespace WinFormsApp5
         float len;
         bool isray;
 
+        const int windowSizeX = 1024;
+        const int windowSizeY = 560;
+
         int mapX = 32, mapY = 32, MapS = 32 * 32;
+
+        Bitmap bitmap1;
+        Bitmap bitmap2;
+        Bitmap bitmap3;
+        Bitmap bitmap4;
+
         int[] map =
         {
-            1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-            1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-            1,1,0,0,2,2,0,0,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-            1,0,0,0,0,2,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-            1,0,0,0,0,0,0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-            1,0,0,0,0,0,0,0,3,3,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+            2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+            3,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+            3,3,0,0,4,2,0,0,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+            3,0,0,0,4,2,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+            3,0,4,0,0,4,0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+            3,0,0,1,0,0,0,0,3,3,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
             1,0,0,0,0,0,0,0,3,3,3,3,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
             1,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,0,0,0,1,
             1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
-            1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
-            1,1,0,0,2,2,0,0,2,2,1,1,1,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
-            1,0,0,0,0,2,0,0,0,0,0,1,1,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
+            1,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
+            1,1,0,0,3,3,0,0,2,2,1,1,1,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
+            1,0,0,0,0,3,0,0,0,0,0,1,1,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,
             1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,
             1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
             1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
@@ -130,30 +151,29 @@ namespace WinFormsApp5
 
         };
 
-
-        int deltaX = 0;
-        void mouse_realtime_location(object sender, MouseEventArgs e)
+        int texture_x;
+        int texture_y;
+        int texture_size;
+        int[] texture =
         {
-            //deltaX = e.Location.X - deltaX;
-            //if (deltaX > 1)
-            //{
-            //    pa -= 0.1f;
-            //    if (pa < 0)
-            //        pa += 2 * PI;
-            //    pdx = MathF.Cos(pa);
-            //    pdy = MathF.Sin(pa);
-
-            //}
-            //else
-            //{
-            //    pa += 0.1f;
-            //    if (pa > 2 * PI)
-            //        pa -= 2 * PI;
-            //    pdx = MathF.Cos(pa);
-            //    pdy = MathF.Sin(pa);
-            //}
-            //panel1.Invalidate();
-        }
+            2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+            2,3,3,3,3,0,0,0,0,0,3,3,3,3,3,2,
+            2,3,1,1,1,0,4,4,4,0,1,1,1,1,3,2,
+            2,3,1,1,1,0,4,4,4,0,1,1,1,1,3,2,
+            2,3,1,1,1,0,4,4,4,0,1,1,1,1,3,2,
+            2,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2,
+            2,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2,
+            2,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2,            
+            2,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2,
+            2,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2,
+            2,3,1,1,1,1,1,1,1,1,1,1,1,1,3,2,
+            2,3,1,1,1,0,4,4,4,0,1,1,1,1,3,2,
+            2,3,1,1,1,0,4,4,4,0,1,1,1,1,3,2,
+            2,3,1,1,1,0,4,4,4,0,1,1,1,1,3,2,
+            2,3,3,3,3,0,0,0,0,0,3,3,3,3,3,2,
+            2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+        };
+        
 
         public Form1()
         {
@@ -161,8 +181,8 @@ namespace WinFormsApp5
 
             px = 3.5f;
             py = 4.5f;
-            this.Size = new Size(1024, 560);
-            panel1.Size = new Size(1024, 560);
+            this.Size = new Size(windowSizeX, windowSizeY);
+            panel1.Size = new Size(windowSizeX, windowSizeY);
             panel1.BackColor = Color.Gray;
 
             this.DoubleBuffered = true;
@@ -173,7 +193,6 @@ namespace WinFormsApp5
             pdy = MathF.Sin(pa);
             P2 = PI / 2;
             P3 = 3 * PI / 2;
-            panel1.MouseMove += new MouseEventHandler(mouse_realtime_location);
 
             DR = 0.0174533f / (float)my_size;
             startra = DR * 30 * my_size;
@@ -181,7 +200,17 @@ namespace WinFormsApp5
             len = 8 / my_size;
             isray = false;
 
+            bitmap1 = new Bitmap(@"C:\Users\tkdlq\source\repos\WinFormsApp5\WinFormsApp5\Resources\Brick_wall.bmp");
+            bitmap2 = new Bitmap(@"C:\Users\tkdlq\source\repos\WinFormsApp5\WinFormsApp5\Resources\Water.bmp");
+            bitmap3 = new Bitmap(@"C:\Users\tkdlq\source\repos\WinFormsApp5\WinFormsApp5\Resources\Dehydrated_Earth.bmp");
+            //bitmap4 = new Bitmap(@"C:\Users\tkdlq\source\repos\WinFormsApp5\WinFormsApp5\Resources\redbrick.bmp");
+
+            texture_x = bitmap1.Width;
+            texture_y = bitmap1.Height;
+            texture_size = texture_x * texture_y;
+
         }
+
 
         public void DrawMap2D(Graphics g)
         {
@@ -218,177 +247,6 @@ namespace WinFormsApp5
             return (MathF.Sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay)));
         }
 
-        public void DDAShot(Graphics g)
-        {
-            Vector rayUnitStepSize = new Vector(MathF.Sqrt(1 + (pdy / pdx) * (pdy / pdx)), MathF.Sqrt(1 + (pdx / pdy) * (pdx / pdy)));
-            Vector mapCheck = new Vector(px, py);
-            Vector raydir = new Vector(pdx, pdy);
-            Vector step;
-            Vector raylength1D;
-
-
-
-
-            if (raydir._x < 0)
-            {
-                step._x = -1;
-                //raylength1D._x = (px)
-            }
-            else
-            {
-                step._x = 1;
-            }
-
-            if (raydir._y < 0)
-            {
-                step._y = -1;
-            }
-            else
-            {
-                step._y = 1;
-            }
-
-        }
-
-        public void DrawRays3D(Graphics g)
-        {
-            int mx, my, mp, dof;
-            float rx, ry, ra, xo, yo, disT;
-
-            ra = pa-DR*30;
-            //ra = pa - DR;
-            if (ra < 0) { ra += 2 * PI; }
-            if (ra > 2 * PI) { ra -= 2 * PI; }
-
-            for (int r = 0; r < 1; r++)
-            {
-                //Horizontal Lines
-                dof = 0;
-                float disH = 1000000, hx = px, hy = py;
-                float aTan = -(1 / MathF.Tan(ra));
-                rx = pdx;
-                ry = pdy;
-                xo = 0;
-                yo = 0;
-
-
-                if (ra > PI) 
-                { 
-                    ry = (((int)py >> 6) << 6) - 0.001f; 
-                    rx = (py - ry) * aTan + px; 
-                    yo = -64; 
-                    xo = -yo * aTan; 
-                }
-                if (ra < PI)
-                { 
-                    ry = (((int)py >> 6) << 6) + 64f;    
-                    rx = (py - ry) * aTan + px; 
-                    yo =  64; 
-                    xo = -yo * aTan; }
-                if (ra == 0 || ra == PI) 
-                { 
-                    rx = px; 
-                    ry = py;
-                    dof = 8; 
-                }
-
-
-                while (dof < 8)
-                {
-                    mx = (int)(rx) >> 6; 
-                    my = (int)(ry) >> 6; 
-                    mp = my * mapX + mx;
-                    g.FillEllipse(new SolidBrush(Color.Aqua), new Rectangle((int)rx - 5, (int)ry - 5, 10, 10));
-                    if (debug == true)
-                    {
-
-                    }
-                    if (mp >= 0 && mp < mapX * mapY && map[mp] == 1)
-                    {
-                        hx = rx;
-                        hy = ry;
-                        disH = Dist(px, py, hx, hy, ra);
-                        dof = 10;
-                    }
-                    else 
-                    {
-                        rx += xo; 
-                        ry += yo; 
-                        dof += 1;
-                    }
-                }
-
-                //g.DrawLine(new Pen(Color.Green, 3), px, py, rx, ry);
-
-                dof = 0;
-                float disV = 1000000, vx = px, vy = py;
-                float nTan = -MathF.Tan(ra);
-                rx = pdx;
-                ry = pdy;
-                xo = 0;
-                yo = 0;
-                //Look down
-                if (ra > P2 && ra < P3) { rx = ((((int)px) >> 6) << 6) - 0.00001f; ry = (px - rx) * nTan + py; xo = -64; yo = -xo * nTan; }
-                if (ra < P2 || ra > P3) { rx = ((((int)px) >> 6) << 6) + 64f; ry = (px - rx) * nTan + py; xo = 64; yo = -xo * nTan; }
-                if (ra == 0 || ra == PI) { rx = px; ry = py; dof = 8; }
-
-                while (dof < 8)
-                {
-                    
-                    
-                    mx = (int)(rx) >> 6; 
-                    my = (int)(ry) >> 6; 
-                    mp = my * mapX + mx;
-                    //g.FillEllipse(new SolidBrush(Color.Gold), new Rectangle((int)rx - 5, (int)ry - 5, 10, 10));
-                    if (mp >= 0 && mp < mapX * mapY && map[mp] == 1)
-                    {
-                        vx = rx;
-                        vy = ry;
-                        disV = Dist(px, py, vx, vy, ra);
-                        dof = 8;
-                    }
-                    else
-                    {
-                        rx += xo;
-                        ry += yo;
-                        dof += 1;
-                    }
-                }
-                Color color;
-                if (disV < disH) 
-                {                  
-                    rx = vx; 
-                    ry = vy; 
-                    disT = disV;
-                    color = Color.FromArgb((int)(0.9 * 255), 0, 0);
-                }
-                else
-                { 
-                    rx = hx; 
-                    ry = hy; 
-                    disT = disH;
-                    color = Color.FromArgb((int)(0.7 * 255), 0, 0);
-                }
-                g.DrawLine(new Pen(Color.Green, 1), px, py, rx, ry);
-
-                //Draw -- 3D
-                float ca = pa - ra; 
-                if (ca < 0) { ca += 2 * PI; } 
-                if (ca > 2 * PI) { ca -= 2 * PI; } 
-                disT = disT * MathF.Cos(ca);
-                float lineH = (MapS * 320) / disT; 
-                if (lineH>320) { lineH = 320; }
-                float lineO = 160 - lineH / 2;
-                if (isray)
-                {
-                    Pen p = new Pen(color, 8);
-                    g.DrawLine(p, r * 8 + 530, lineO, r * 8 + 530, lineH + lineO);
-
-                }
-                ra += DR;
-                if (ra < 0) { ra += 2 * PI; } if (ra > 2 * PI) { ra -= 2 * PI; }
-            }
-        }
 
 
         public rayhit raycast(Graphics g, vf2d start, float radian, float maxdist, Color color)
@@ -438,6 +296,7 @@ namespace WinFormsApp5
                     vMapCheck.x += vStep.x;
                     fDistance = vRayLength1D.x;
                     hit.distH = vRayLength1D.x;
+
                     vRayLength1D.x += vRayUnitStepSize.x;
                 }
                 else
@@ -445,9 +304,9 @@ namespace WinFormsApp5
                     vMapCheck.y += vStep.y;
                     fDistance = vRayLength1D.y;
                     hit.distV = vRayLength1D.y;
+
                     vRayLength1D.y += vRayUnitStepSize.y;
                 }
-                hit.type = 1;
                 if (vMapCheck.x >= 0 && vMapCheck.x < mapX && vMapCheck.y >= 0 && vMapCheck.y < mapY)
                 {
                     if (map[vMapCheck.y * mapX + vMapCheck.x] != 0)
@@ -456,6 +315,7 @@ namespace WinFormsApp5
                         hit.type = map[vMapCheck.y * mapX + vMapCheck.x];
                     }
                 }
+                hit.type = 1;
             }
             vf2d vIntersecton = new vf2d(vRayStart.x, vRayStart.y);
 
@@ -464,6 +324,34 @@ namespace WinFormsApp5
                 vIntersecton.x = vRayStart.x + vRaydir.x * fDistance;
                 vIntersecton.y = vRayStart.y + vRaydir.y * fDistance;
                 hit.hit = true;
+                //hit.wall = wall_dir.EAST;
+                if (hit.distH < hit.distV)
+                {
+                    if (vRaydir.y > 0.000f)
+                    {
+                        hit.wall = wall_dir.WESET;
+                        hit.color = Color.Blue;
+                    }
+                    else
+                    {
+                        hit.wall = wall_dir.EAST;
+                        hit.color = Color.Yellow;
+                    }
+                }
+                else
+                {
+                    if (vRaydir.x > 0.000f)
+                    {
+                        hit.wall = wall_dir.SOUTH;
+                        hit.color = Color.Red;
+                    }
+                    else
+                    {
+                        hit.wall = wall_dir.NORTH;
+                        hit.color = Color.Green;
+                    }
+                }
+
             }
             else
             {
@@ -471,7 +359,8 @@ namespace WinFormsApp5
                 vIntersecton.y = vRayStart.y + vRaydir.y * maxdist;
                 hit.hit = false;
             }
-            
+            hit.hitpoint = vIntersecton;
+            hit.mapPoint = vMapCheck;
             if (isray)
             {
                 Pen pen = new Pen(color, 1);
@@ -480,29 +369,50 @@ namespace WinFormsApp5
             else
             {
                 Pen p;
+                //if (map[vMapCheck.y * mapX + vMapCheck.x] == 1)
+                //{
+                //    p = new Pen(Color.Red, 1);
+                //}
+                //else if (map[vMapCheck.y * mapX + vMapCheck.x] == 2)
+                //{
+                //    p = new Pen(Color.Green, 1);
+                //}
+                //else if (map[vMapCheck.y * mapX + vMapCheck.x] == 3)
+                //{
+                //    p = new Pen(Color.Blue, 1);
+                //}
+                //else
+                //{
+                //    p = new Pen(Color.Yellow, 1);
+                //}
                 if (map[vMapCheck.y * mapX + vMapCheck.x] == 1)
                 {
-                    p = new Pen(Color.Red, 1);
+                    //switch (hit.wall)
+                    //{
+                    //    case wall_dir.NONE:
+                    //        hit.color = Color.White;
+                    //        break;
+                    //    case wall_dir.EAST:
+                    //        hit.color = Color.Red;
+                    //        break;
+                    //    case wall_dir.WESET:
+                    //        hit.color = Color.Green;
+                    //        break;
+                    //    case wall_dir.NORTH:
+                    //        hit.color = Color.Blue;
+                    //        break;
+                    //    case wall_dir.SOUTH:
+                    //        hit.color = Color.Yellow;
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
                 }
-                else if (map[vMapCheck.y * mapX + vMapCheck.x] == 2)
-                {
-                    p = new Pen(Color.Green, 1);
-                }
-                else if (map[vMapCheck.y * mapX + vMapCheck.x] == 3)
-                {
-                    p = new Pen(Color.Blue, 1);
-                }
-                else
-                {
-                    p = new Pen(Color.Yellow, 1);
-                }
-                
+                p = new Pen(hit.color, 1);
                 g.DrawLine(p, vRayStart.x * mapPxel, vRayStart.y * mapPxel, vIntersecton.x * mapPxel, vIntersecton.y * mapPxel);
             }
             
             hit.dist = Dist(vRayStart.x * mapPxel, vRayStart.y * mapPxel, vIntersecton.x * mapPxel, vIntersecton.y * mapPxel, radian);
-            
-
             return hit;
             
         }
@@ -572,8 +482,8 @@ namespace WinFormsApp5
             {
                 if (move_dir[1] == true)
                 {
-                    px -= pdx * 0.2f;
-                    py -= pdy * 0.2f;
+                    px -= pdx * 0.1f;
+                    py -= pdy * 0.1f;
                 }
             }
             if (e.KeyChar == 'r')
@@ -616,7 +526,7 @@ namespace WinFormsApp5
 
             cc = BufferedGraphicsManager.Current;
             bff = cc.Allocate(panel1.CreateGraphics(), panel1.ClientRectangle);            
-            bff.Graphics.FillRectangle(new SolidBrush(Color.Gray), 0, 0, 1024, 560);
+            bff.Graphics.FillRectangle(new SolidBrush(Color.Gray), 0, 0, windowSizeX, windowSizeY);
             
             SolidBrush b;
             for (int y = 0; y < mapY; y++)
@@ -671,8 +581,12 @@ namespace WinFormsApp5
                 if (ra < 0) { ra += 2 * PI; }
                 if (ra > 2 * PI) { ra -= 2 * PI; }
                 float ca = pa - ra;
+                //if (ca < 0)
+                //    ca += 2 * PI;
+                //if (ca > 2 * PI)
+                //    ca -= 2 * PI;
                 rayhit hit = raycast(bff.Graphics, new vf2d(px, py), ra, 40, Color.Green);
-                float distT = hit.dist * MathF.Cos(ca);
+                float distT = (hit.dist / mapPxel) * MathF.Cos(ca);
                 //Draw -- 3D
                 if (ca < 0)
                     ca += 2 * PI;
@@ -682,53 +596,150 @@ namespace WinFormsApp5
                 if (hit.hit == true)
                 {
 
-                    float lineH = (mapPxel * 320) / distT;
+                    float lineH = (windowSizeY - 200) / distT;
 
                     //if (lineH > 320)
                     //{
                     //    lineH = 320;
                     //}
 
-                    float lineO = 160 - lineH / 2;
+                    float lineO = ((windowSizeY - 100) / 2) - lineH / 2;
                     Color c;
 
                     //sky
                     c = Color.SkyBlue;
                     p = new Pen(c, len);
-                    bff.Graphics.DrawLine(p, r * len + 530, 0, r * len + 530, lineO);
+                    bff.Graphics.DrawLine(p   , r * len + windowSizeX / 2 + 5,       0, r * len + windowSizeX / 2 + 5, lineO);
+                    //bff.Graphics.DrawLine(p, r * len + windowSizeX / 2 + 5, lineO, r * len + windowSizeX / 2 + 5, lineH + lineO);
 
 
 
-                    
 
                     //box
-                    if (hit.type == 1)
-                    {
-                        c = Color.Red;
-                    }
-                    else if (hit.type == 2)
-                    {
-                        c = Color.Green;
-                    }
-                    else if (hit.type == 3)
-                    {
-                        c = Color.Blue;
-                    }
-                    else
-                    {
-                        c = Color.Black;
-                    }
+                    c = hit.color;
 
-                    if (hit.distH < hit.distV)
-                        c = Color.FromArgb(c.R, c.G, c.B);
-                    else
-                        c = Color.FromArgb((int)(c.R * 0.65f), 
-                                           (int)(c.G * 0.65f), 
-                                           (int)(c.B * 0.65f));
+                    //if (hit.type == 1)
+                    //{
+                    //    c = hit.color;
+                    //}
+                    //else if (hit.type == 2)
+                    //{
+                    //    c = hit.color;
+                    //}
+                    //else if (hit.type == 3)
+                    //{
+                    //    c = hit.color;
+                    //}
+                    //else
+                    //{
+                    //    c = hit.color;
+                    //}
+                    int tx = 0;
+                   
 
                     p = new Pen(c, len);
-                    bff.Graphics.DrawLine(p, r * len + 530, lineO, r * len + 530, lineH + lineO);
+                    int pivot = (int)lineO;
+                    
+                    
+                    //bff.Graphics.DrawLine(p, r * len + windowSizeX / 2 + 5,       0, r * len + windowSizeX / 2 + 5, lineO);
+                    Bitmap bmp = bitmap1;
 
+                    //if (map[hit.mapPoint.y * mapX + hit.mapPoint.x] == 1)
+                    //    bmp = bitmap1;
+                    //else if (map[hit.mapPoint.y * mapX + hit.mapPoint.x] == 2)
+                    //    bmp = bitmap2;
+                    //else if (map[hit.mapPoint.y * mapX + hit.mapPoint.x] == 3)
+                    //    bmp = bitmap3;
+                    if (hit.wall == wall_dir.EAST)
+                    {
+                        bmp = bitmap1;
+                    }
+                    else if (hit.wall == wall_dir.WESET)
+                    {
+                        bmp = bitmap2;
+                    }
+                    else if (hit.wall == wall_dir.SOUTH)
+                    {
+                        bmp = bitmap3;
+                    }
+                    else
+                        bmp = bitmap1;
+
+                    float gd = 1f;
+                    if (hit.distH < hit.distV)
+                    {
+                        c = Color.FromArgb(c.R, c.G, c.B);
+                        gd = 1f;
+                        tx = (int)(((hit.hitpoint.x) - (int)(hit.hitpoint.x)) * 16f);
+                    }
+                    else
+                    {
+                        c = Color.FromArgb((int)(c.R * 0.75f),
+                                           (int)(c.G * 0.75f),
+                                           (int)(c.B * 0.75f));
+                        gd = 0.75f;
+                        tx = (int)(((hit.hitpoint.y) - (int)(hit.hitpoint.y)) * 16f);
+                    }
+
+
+
+                    float step = bmp.Height / lineH;
+                    //texture_size = 1024;
+                    float ty = 0;
+                    for (int i = 0; i < lineH; i++)
+                    {
+                        Color tc = bmp.GetPixel(tx % bmp.Width, (int)ty % bmp.Height);
+                        tc = Color.FromArgb((int)(tc.R * gd), (int)(tc.G * gd), (int)(tc.B * gd));
+                        bff.Graphics.FillRectangle(new SolidBrush(tc), r * len + windowSizeX / 2 + 2, pivot + i, len, len);
+                        //if (texture[tm] == 0)
+                        //{
+                        //    bff.Graphics.FillRectangle(new SolidBrush(Color.Red), r * len + +windowSizeX / 2, pivot + i, len, len);
+                        //}
+                        //else if (texture[tm] == 1)
+                        //    bff.Graphics.FillRectangle(new SolidBrush(Color.Yellow), r * len + +windowSizeX / 2, pivot + i, len, len);
+                        //else if (texture[tm] == 2)
+                        //    bff.Graphics.FillRectangle(new SolidBrush(Color.Brown), r * len + +windowSizeX / 2, pivot + i, len, len);
+                        //else if (texture[tm] == 3)
+                        //    bff.Graphics.FillRectangle(new SolidBrush(Color.Chocolate), r * len + +windowSizeX / 2, pivot + i, len, len);
+                        //else if (texture[tm] == 4)
+                        //    bff.Graphics.FillRectangle(new SolidBrush(Color.Cornsilk), r * len + +windowSizeX / 2, pivot + i, len, len);
+                        //else if (texture[tm] == 5)
+                        //    bff.Graphics.FillRectangle(new SolidBrush(Color.Khaki), r * len + +windowSizeX / 2, pivot + i, len, len);
+                        ty += step;
+                        //bff.Graphics.Drawrec(p, r * len + 530, lineO, r * len + 530, i + lineO);
+                        //for (int j = 0; j < lineH / texture_y + 1; j++)
+                        //{
+
+                        //    ++pivot;
+                        //}
+                    }
+                    
+                    int lineoff = (int)(lineO + lineH);
+                    bmp = bitmap1;
+                    //for (int y = lineoff; y < windowSizeY; y++)
+                    //{
+                    //    float _dy = y - (windowSizeY / 2.0f);
+
+                    //    float _pi = pa - ra;
+
+                    //    if (_pi >= 2 * PI)
+                    //        _pi -= 2 * PI;
+                    //    else if (_pi < 0)
+                    //        _pi += 2 * PI;
+
+                    //    float _ratFix = MathF.Cos(_pi);
+
+                    //    float _tx = px / 2 + pdx  / _dy / _ratFix * MathF.Cos(_pi);
+                    //    float _ty = py / 2 - pdy  / _dy / _ratFix * MathF.Cos(_pi);
+
+                    //    int _cx = (int)_tx & (bmp.Width - 1);
+                    //    int _cy = (int)_ty & (bmp.Height - 1);
+
+                    //    Color tc = bmp.GetPixel(_cx, _cy);
+                    //    bff.Graphics.FillRectangle(new SolidBrush(tc), r * len + windowSizeX / 2 + 2, y, len, len);
+                    //}
+
+                    //bff.Graphics.DrawLine(p, r * len + windowSizeX / 2 + 5, lineO, r * len + windowSizeX / 2 + 5, (int)(lineH + lineO));
                 }
                 ra += DR;
             }
