@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 06:22:20 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/23 08:42:45 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,40 +76,72 @@ int	key_release(int keycode, t_object *_player)
 
 int main_loop(t_object *player)
 {
-	int y = 0;
+	
 	t_vi2d start;
 	t_vi2d len;
 	t_image *image;
 
-	//draw mini map
+	//draw mini map version1
 	t_map_info map_info;
 	map_info.map = &map[0];
 	map_info.size_x = MAP_X;
 	map_info.size_y = MAP_Y;
 	image = player->image;
-	while (y < MAP_Y)
+	// while (y < MAP_Y)
+	// {
+	// 	int x = 0;
+	// 	while (x < MAP_X)
+	// 	{
+	// 		start.x = x * per_boxsize;
+	// 		start.y = y * per_boxsize;
+
+	// 		start.x = start.x ;
+	// 		start.y = start.y ;
+
+	// 		len.x = per_boxsize;
+	// 		len.y = per_boxsize;
+			
+	// 		if (map[y * MAP_X + x] == 1)
+	// 			img_draw_fill_rectangle(image, start, len, 0XFFFFFF);
+	// 		else	
+	// 			img_draw_fill_rectangle(image, start, len, 0X000000);
+	// 		++x;
+
+	// 	}
+	// 	++y;
+	// }
+
+	int y = 0;
+	float map_step =  8 / (float)500;
+	t_vf2d offset = new_vf2d(player->position.x - 4.0f, player->position.y - 4.0f);
+	printf("%f , %f\n", offset.x, offset.y);
+	
+	y = 0;
+	while (y < 500)
 	{
 		int x = 0;
-		while (x < MAP_X)
+		offset.x = player->position.x - 4.0f;
+		while (x < 500)
 		{
-			start.x = x * per_boxsize;
-			start.y = y * per_boxsize;
-
-			start.x = start.x ;
-			start.y = start.y ;
-
-			len.x = per_boxsize;
-			len.y = per_boxsize;
-			
-			if (map[y * MAP_X + x] == 1)
-				img_draw_fill_rectangle(image, start, len, 0XFFFFFF);
-			else	
-				img_draw_fill_rectangle(image, start, len, 0X000000);
+			t_vi2d ip = new_vi2d((int)offset.x, (int)offset.y);
+			if (ip.x < 0 || ip.x >= MAP_X || ip.y < 0 || ip.y >= MAP_Y)
+			{
+				img_draw_pixel(image, x, y, 0XFF0000);
+			}
+			else if (map[ip.y * MAP_X + ip.x] == 0)
+				img_draw_pixel(image, x, y, 0X000000);
+			else
+				img_draw_pixel(image, x, y, 0XFFFFFF);
+			offset.x += map_step;
 			++x;
-
 		}
+		offset.y += map_step;
 		++y;
 	}
+
+	start = new_vi2d((250) - 8, (250) - 8);
+	len	  = new_vi2d(16, 16);
+	img_draw_fill_rectangle(image, start, len, 0X00FFFF00);
 
 	//calc player
 	
@@ -119,11 +151,11 @@ int main_loop(t_object *player)
 	{
 		t_vf2d dir = new_vf2d(-cosf(player->pa + PI / 2), -sinf(player->pa + PI / 2));
 		t_raycast_hit h = raycasting(&map_info, player->position, dir, 0.5f);
-		if (h.is_hit == 0)
+		if (h.distance > 0.5f)
 		{
-		}
 			player->position.x -= cosf(player->pa + PI / 2) * 0.05f;
 			player->position.y -= sinf(player->pa + PI / 2) * 0.05f;
+		}
 			
 
 	}
@@ -131,33 +163,32 @@ int main_loop(t_object *player)
 	{
 		t_vf2d dir = new_vf2d(cosf(player->pa + PI / 2), sinf(player->pa + PI / 2));
 		t_raycast_hit h = raycasting(&map_info, player->position, dir, 0.5f);
-		if (h.is_hit == 0)
+		if (h.distance > 0.5f)
 		{
-		}
 			player->position.x += cosf(player->pa + PI / 2) * 0.05f;
 			player->position.y += sinf(player->pa + PI / 2) * 0.05f;
+		}
 	}
 
 	if (ketmap[2])
 	{
 		t_vf2d dir = new_vf2d(cosf(player->pa), sinf(player->pa));
 		t_raycast_hit h = raycasting(&map_info, player->position, dir, 0.5f);
-		if (h.is_hit == 0)
+		if (h.distance > 0.5f)
 		{
-		}
-
 			player->position.x += cosf(player->pa) * 0.05f;
 			player->position.y += sinf(player->pa) * 0.05f;
+		}
 	}
 	else if(ketmap[3])
 	{
 		t_vf2d dir = new_vf2d(-cosf(player->pa), -sinf(player->pa));
 		t_raycast_hit h = raycasting(&map_info, player->position, dir, 0.5f);
-		if (h.is_hit == 0)
+		if (h.distance > 0.5f)
 		{
-		}
 			player->position.x -= cosf(player->pa) * 0.05f;
 			player->position.y -= sinf(player->pa) * 0.05f;
+		}
 	}
 
 	if (keyarrow[0])
@@ -201,7 +232,7 @@ int main_loop(t_object *player)
 		line_e.x = hit.distance * per_boxsize * dirction.x + line_s.x;
 		line_e.y = hit.distance * per_boxsize * dirction.y + line_s.y;
 		//player ray
-		img_draw_line(image, line_s, line_e, 0XFF0000);
+		//img_draw_line(image, line_s, line_e, 0XFF0000);
 		float pa = ra - player->pa;
 		if (pa < 0)
 		{
@@ -215,12 +246,12 @@ int main_loop(t_object *player)
 		
 		float lineh = (WINDOW_SIZE_Y / 1.5f) / (hit.distance * cosf(pa));
 
-		// if (lineh >= 1900.0f)
-		// {
-		// 	lineh = 1900.0f;
-		// }
+		if (lineh >= 2024.0f)
+		{
+			lineh = 2024.0f;
+		}
 
-        float lineo = ((WINDOW_SIZE_Y - 150) / 2) - lineh / 2;		
+        float lineo = ((WINDOW_SIZE_Y) / 2) - lineh / 2;		
 
 		//sky
 		start = new_vi2d(WINDOW_SIZE_X / 2 + i, 0);
@@ -228,18 +259,10 @@ int main_loop(t_object *player)
 		img_draw_fill_rectangle(image, start, len, 0X0067E3);
 
 		//box
-		float sstep = (float)(player->ea_texture.width) / lineh;
+		
 		float tm = 0.0f;
 		float tx = 0.0f;
 
-		if (hit.is_disth == 1)
-		{
-			tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * player->ea_texture.height);
-		}
-		else
-		{
-			tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * player->ea_texture.width);
-		}
 		t_image *tt;
 		
 		if (hit.wall_dir == NO)
@@ -258,6 +281,20 @@ int main_loop(t_object *player)
 		{
 			tt = &player->ea_texture;
 		}
+
+		float sstep;
+		if (hit.is_disth == 1)
+		{
+			tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * tt->height);
+			sstep = (float)(tt->height) / lineh;
+		}
+		else
+		{
+			tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * tt->width);
+			sstep = (float)(tt->width) / lineh;
+		}
+
+		
 
 		for (int j = lineo; j < (int)(lineh + lineo); j++)
 		{
@@ -282,11 +319,11 @@ int main_loop(t_object *player)
 	}
 
 	//draw player
-	t_vf2d word_position = new_vf2d_multiple(player->position, per_boxsize);
-	t_vi2d player_start = casting_vi2d(word_position);
-	t_vi2d player_len = new_vi2d(per_boxsize >> per_player, per_boxsize >> per_player);
-	player_start = new_vi2d(player_start.x - player_len.x / 2 , player_start.y - player_len.y / 2);
-	img_draw_fill_rectangle(image, player_start, player_len, 0X0FFFF00);
+	// t_vf2d word_position = new_vf2d_multiple(player->position, per_boxsize);
+	// t_vi2d player_start = casting_vi2d(word_position);
+	// t_vi2d player_len = new_vi2d(per_boxsize >> per_player, per_boxsize >> per_player);
+	// player_start = new_vi2d(player_start.x - player_len.x / 2 , player_start.y - player_len.y / 2);
+	// img_draw_fill_rectangle(image, player_start, player_len, 0X0FFFF00);
 	mlx_put_image_to_window(player->mlx, player->win, image->mlx_img, 0, 0);
 	return 1;
 
@@ -306,10 +343,10 @@ int main(void)
 	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &image);
 
 	//init_texture
-	img_file_init(mlx, "Bark.png", &player.ea_texture);
-	img_file_init(mlx, "Bricks.png", &player.no_texture);
-	img_file_init(mlx, "Iron.png", &player.so_texture);
-	img_file_init(mlx, "bookshelf.png", &player.we_texture);
+	img_file_init(mlx, "64x/Mud.png", &player.ea_texture);
+	img_file_init(mlx, "64x/WalkStone.png", &player.no_texture);
+	img_file_init(mlx, "64x/WalkStone.png", &player.so_texture);
+	img_file_init(mlx, "64x/Coal.png", &player.we_texture);
 
 	player.position = new_vf2d(1.5f, 1.5f);
 	player.image = &image;

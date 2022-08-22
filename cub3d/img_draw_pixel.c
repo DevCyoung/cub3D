@@ -144,7 +144,7 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 
 	hit.is_disth = 0;
 	is_found = 0;
-	curdist = 0;
+	curdist = ray_len_1d.x > ray_len_1d.y ? ray_len_1d.y : ray_len_1d.x;
 	while (is_found == 0 && curdist < max_dist)
 	{
 		if (ray_len_1d.x < ray_len_1d.y)
@@ -169,7 +169,7 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 				is_found = 1;
 		}
 	}
-	hit.is_hit = is_found;
+	
 	hit.distance = curdist;
 
 	if (hit.is_disth == 1)
