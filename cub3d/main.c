@@ -1,7 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
+/*   Updated: 2022/08/23 06:22:20 by yoseo            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3D.h"
 #include <stdio.h>
-
-
 
 char map[256] = 
 {
@@ -23,30 +33,7 @@ char map[256] =
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 };
 
-
-
-char	texture[17][17]=
-{
-	"1111111111111111",
-	"1000000000000111",
-	"1100000000001001",
-	"1010000000010001",
-	"1001000000100001",
-	"1000100001000001",
-	"1000001010000001",
-	"1000000100000001",
-	"1000001010000001",
-	"1000010001000001",
-	"1000100000100001",
-	"1001000000010001",
-	"1010000000001001",
-	"1100000000000101",
-	"1100000000000011",
-	"1111111111111111",
-};
-
 int	ketmap[4] = {0, 0, 0, 0};
-
 int	keyarrow[2] = {0,0};
 
 int	key_press(int keycode, t_object *_player)
@@ -207,11 +194,13 @@ int main_loop(t_object *player)
 		
 		t_vf2d dirction = new_vf2d(cosf(ra), sinf(ra));
 
+
 		t_raycast_hit hit = raycasting(&map_info, player->position, dirction, 15);
 		t_vi2d line_s = casting_vi2d(new_vf2d_multiple(player->position, per_boxsize));
 		t_vi2d line_e;
 		line_e.x = hit.distance * per_boxsize * dirction.x + line_s.x;
 		line_e.y = hit.distance * per_boxsize * dirction.y + line_s.y;
+		//player ray
 		img_draw_line(image, line_s, line_e, 0XFF0000);
 		float pa = ra - player->pa;
 		if (pa < 0)
@@ -239,44 +228,40 @@ int main_loop(t_object *player)
 		img_draw_fill_rectangle(image, start, len, 0X0067E3);
 
 		//box
-		// start = new_vi2d(WINDOW_SIZE_X / 2 + i, lineo);
-		// len	=   new_vi2d(1, lineh);
-		//float gd;
-		
-		float sstep = (float)(player->book_texture->width) / lineh;
-
-		// if (hit.disth < hit.distv)
-		// {
-		// 	gd = 1.0f;
-		// 	tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * 16);
-		// }
-		// else
-		// {
-		// 	gd = 0.75f;
-		// 	tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * 16);
-		// }
-
+		float sstep = (float)(player->ea_texture.width) / lineh;
 		float tm = 0.0f;
 		float tx = 0.0f;
 
 		if (hit.is_disth == 1)
 		{
-			tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * player->book_texture->width);
+			tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * player->ea_texture.height);
 		}
 		else
 		{
-			tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * player->book_texture->width);
+			tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * player->ea_texture.width);
 		}
-		//tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * 16);
+		t_image *tt;
+		
+		if (hit.wall_dir == NO)
+		{
+			tt = &player->no_texture;
+		}
+		else if (hit.wall_dir == SO)
+		{
+			tt = &player->so_texture;
+		}
+		else if (hit.wall_dir == WE)
+		{
+			tt = &player->we_texture;
+		}
+		else if (hit.wall_dir == EA)
+		{
+			tt = &player->ea_texture;
+		}
 
 		for (int j = lineo; j < (int)(lineh + lineo); j++)
 		{
-			int co = img_get_color(player->book_texture, (int)tm % player->book_texture->width, (int)tx % player->book_texture->height);
-			// int co = 0;
-			// if (texture[(int)tm % MAP_X][(int)tx % MAP_Y] == '0')
-			// 	co = 0XFFFFFF;
-			// else
-			// 	co = 0X0CEF0F;
+			int co = img_get_color(tt, (int)tm % tt->width, (int)tx % tt->height);
 			img_draw_pixel(image, WINDOW_SIZE_X / 2 + i, j, co);
 			tx = tx + sstep;
 		}
@@ -290,7 +275,7 @@ int main_loop(t_object *player)
 		//floor
 		start = new_vi2d(WINDOW_SIZE_X / 2 + i, lineo + lineh);
 		len	= new_vi2d(1, WINDOW_SIZE_Y - lineo + lineh);
-		img_draw_fill_rectangle(image, start, len, 0X00000F);
+		img_draw_fill_rectangle(image, start, len, 0XFF985C);
 
 		ra += RADIN / ssss;
 		++i;
@@ -312,7 +297,6 @@ int main(void)
 	void	*mlx;
 	void	*win;
 	t_image image;
-	t_image book_texture;
 	t_object player;
 
 	printf("222\n");
@@ -320,11 +304,15 @@ int main(void)
 	win = mlx_new_window(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, "hello world!");
 
 	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &image);
-	img_file_init(mlx, "bookshelf.png", &book_texture);
+
+	//init_texture
+	img_file_init(mlx, "Bark.png", &player.ea_texture);
+	img_file_init(mlx, "Bricks.png", &player.no_texture);
+	img_file_init(mlx, "Iron.png", &player.so_texture);
+	img_file_init(mlx, "bookshelf.png", &player.we_texture);
 
 	player.position = new_vf2d(1.5f, 1.5f);
 	player.image = &image;
-	player.book_texture = &book_texture;
 	player.mlx = mlx;
 	player.win = win;
 	player.pa = 0.0f;

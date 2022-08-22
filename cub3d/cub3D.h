@@ -57,7 +57,10 @@ typedef struct s_object
 	void	*win;
 	float	pa;
 	t_image *image;
-	t_image *book_texture;
+	t_image we_texture;
+	t_image ea_texture;
+	t_image no_texture;
+	t_image so_texture;
 	t_vf2d	direction;
 	t_vf2d	position;
 }	t_object;

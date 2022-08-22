@@ -9,8 +9,6 @@ int img_init(void *mlx_ptr, int size_x, int size_y, t_image *image)
 
 int img_file_init(void *mlx_ptr, char *file_name, t_image *image)
 {
-	// image->width = 64;
-	// image->height = 64;
 	image->mlx_img = mlx_png_file_to_image(mlx_ptr, file_name, &image->width, &image->height);
 	image->data_addr = mlx_get_data_addr(image->mlx_img, &image->bits_per_pixel, &image->size_line, &image->endian);
 	return 1;
@@ -171,11 +169,24 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 				is_found = 1;
 		}
 	}
-	hit.is_hit = 0;
-	if (is_found == 1)
-		hit.is_hit = 1;
+	hit.is_hit = is_found;
 	hit.distance = curdist;
-	hit.hit_point = new_vf2d(start.x + direct.x * hit.distance , start.y + direct.y * hit.distance);
 
+	if (hit.is_disth == 1)
+	{
+		if (direct.x < 0)
+			hit.wall_dir = NO;
+		else
+			hit.wall_dir = SO;
+	}
+	else
+	{
+		if (direct.y < 0)
+			hit.wall_dir = EA;
+		else
+			hit.wall_dir = WE;
+	}
+
+	hit.hit_point = new_vf2d(start.x + direct.x * hit.distance , start.y + direct.y * hit.distance);
 	return hit;
 }
