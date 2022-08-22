@@ -36,6 +36,31 @@ typedef struct s_object
 	t_vf2d	position;
 }	t_object;
 
+typedef enum e_wall_dir
+{
+	WE = 0,
+	EA,
+	NO,
+	SO,
+}	t_wall_dir;
+
+typedef struct s_raycast_hit
+{
+	char		is_hit;
+	float		distance;
+	t_vf2d		hit_point;
+	t_vi2d		map_position;
+	t_wall_dir	wall_dir;
+}	t_raycast_hit;
+
+typedef struct s_map_info
+{
+	int		size_x;
+	int		size_y;
+	char	*map;
+} 	t_map_info;
+
+
 int img_init(void* mlx_ptr, int size_x, int size_y ,t_image *image);
 int	img_draw_pixel(t_image *image, int x, int y, int color);
 int img_draw_line(t_image *image, t_vi2d start, t_vi2d end, int color);
@@ -47,3 +72,4 @@ t_vf2d new_vf2d(float x, float y);
 t_vi2d new_vi2d(int x, int y);
 t_vf2d	new_vf2d_multiple(t_vf2d vf2d, float value);
 t_vi2d	new_vi2d_multiple(t_vi2d vi2d, int value);
+float	distance(t_vf2d start, t_vf2d end);

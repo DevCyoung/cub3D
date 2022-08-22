@@ -5,6 +5,19 @@
 #define WINDOW_SIZE_X 1024
 #define WINDOW_SIZE_Y 1024
 
+#define X_EVENT_KEY_PRESS			2
+#define X_EVENT_KEY_RELEASE			3
+#define X_EVENT_KEY_EXIT           17
+
+#define KEY_A 0
+#define KEY_S 1
+#define KEY_D 2
+#define KEY_W 13
+
+
+#define KEY_LEFT 	123
+#define KEY_RIGHT	124
+
 #define per_boxsize	128
 #define per_player	2
 int map[64] = 
@@ -21,6 +34,35 @@ int map[64] =
 
 
 t_object player;
+int	ketmap[4] = {0, 0, 0, 0};
+
+int	key_press(int keycode, t_object *_player)
+{
+	if (keycode == KEY_A)
+		ketmap[0] = 1;
+	else if (keycode == KEY_D)
+		ketmap[1] = 1;
+	if (keycode == KEY_W)
+		ketmap[2] = 1;
+	else if (keycode == KEY_S)
+		ketmap[3] = 1;
+	_player = NULL;
+	return 1;
+}
+
+int	key_release(int keycode, t_object *_player)
+{
+	if (keycode == KEY_A)
+		ketmap[0] = 0;
+	if (keycode == KEY_D)
+		ketmap[1] = 0;
+	if (keycode == KEY_W)
+		ketmap[2] = 0;
+	if (keycode == KEY_S)
+		ketmap[3] = 0;
+	_player = NULL;
+	return 1;
+}
 
 int main_loop(t_object *player)
 {
@@ -39,8 +81,8 @@ int main_loop(t_object *player)
 			start.x = x * per_boxsize;
 			start.y = y * per_boxsize;
 
-			start.x = start.x + x + 1;
-			start.y = start.y + y + 1;
+			start.x = start.x ;
+			start.y = start.y ;
 
 			len.x = per_boxsize;
 			len.y = per_boxsize;
@@ -54,6 +96,28 @@ int main_loop(t_object *player)
 		++y;
 	}
 
+	//calc player
+	if (ketmap[0])
+	{
+		player->position.x -= 0.05f;
+	}
+	else if (ketmap[1])
+	{
+		player->position.x += 0.05f;
+	}
+
+	if (ketmap[2])
+	{
+		player->position.y -= 0.05f;
+	}
+	else if(ketmap[3])
+	{
+		player->position.y += 0.05f;
+	}
+	// ketmap[0] = 0;
+	// ketmap[1] = 0;
+	// ketmap[2] = 0;
+	// ketmap[3] = 0;
 	//draw player
 	t_vf2d word_position = new_vf2d_multiple(player->position, per_boxsize);
 	t_vi2d player_start = casting_vi2d(word_position);
@@ -116,6 +180,9 @@ int main(void)
 	// start.y = (int)player.y;
 
 	// img_draw_fill_rectangle(&image, start, len, 0X0FFFF00);
+	mlx_hook(win, X_EVENT_KEY_PRESS, 0, &key_press, &player);
+	mlx_hook(win, X_EVENT_KEY_RELEASE, 0, &key_release, &player);
+
 	mlx_loop_hook(mlx, main_loop, &player);
 	mlx_loop(mlx);
 	return (0);

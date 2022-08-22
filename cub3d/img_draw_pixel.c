@@ -67,3 +67,20 @@ int img_draw_fill_rectangle(t_image *image, t_vi2d start, t_vi2d len, int color)
 	}
 	return color;
 }
+
+float	distance(t_vf2d start, t_vf2d end)
+{
+	float dx;
+	float dy;
+	float dist;
+
+	dx = end.x - start.x;
+	dy = end.y - start.y;
+	dist = sqrtf(dx * dx + dy * dy);
+	return dist;
+}
+
+t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, float dist)
+{
+		
+}
