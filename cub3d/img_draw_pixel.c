@@ -55,10 +55,10 @@ int img_draw_fill_rectangle(t_image *image, t_vi2d start, t_vi2d len, int color)
 	dirx = start.x + len.x;
 	diry = start.y + len.y;
 	y = start.y;
-	while (y <= diry)
+	while (y < diry)
 	{
 		x = start.x;
-		while (x <= dirx)
+		while (x < dirx)
 		{
 			img_draw_pixel(image, x, y, color);
 			++x;

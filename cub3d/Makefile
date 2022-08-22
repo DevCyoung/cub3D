@@ -19,6 +19,7 @@ MLX = ./minilibx/libmlx.a
 
 SRCS = main.c\
 	   img_draw_pixel.c\
+	   vector_helper.c\
 
 OBJS = $(SRCS:.c=.o)
 
