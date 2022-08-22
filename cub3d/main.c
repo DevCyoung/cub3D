@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 08:42:45 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/23 08:52:00 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,19 @@ char map[256] =
 {
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,
-	1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,
-	1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,1,1,1,1,0,0,0,0,0,0,0,1,0,1,
+	1,0,1,1,1,0,0,0,0,0,0,0,1,0,0,1,
+	1,0,1,1,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,1,1,0,0,0,0,0,0,1,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
 	1,0,0,1,1,0,0,0,1,1,0,0,0,0,0,1,
 	1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,1,1,0,0,0,0,0,0,1,1,1,0,1,
-	1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,
-	1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,1,1,0,1,0,0,0,0,1,1,1,0,1,
+	1,0,0,0,0,1,0,0,0,1,1,1,1,1,0,1,
+	1,0,0,1,0,1,0,0,1,1,1,1,1,1,0,1,
+	1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 };
 
@@ -144,9 +144,7 @@ int main_loop(t_object *player)
 	img_draw_fill_rectangle(image, start, len, 0X00FFFF00);
 
 	//calc player
-	
-
-	
+	//add -30 + 30;
 	if (ketmap[0])
 	{
 		t_vf2d dir = new_vf2d(-cosf(player->pa + PI / 2), -sinf(player->pa + PI / 2));
@@ -343,10 +341,10 @@ int main(void)
 	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &image);
 
 	//init_texture
-	img_file_init(mlx, "64x/Mud.png", &player.ea_texture);
-	img_file_init(mlx, "64x/WalkStone.png", &player.no_texture);
-	img_file_init(mlx, "64x/WalkStone.png", &player.so_texture);
-	img_file_init(mlx, "64x/Coal.png", &player.we_texture);
+	img_file_init(mlx, "pics/mossy.png", &player.ea_texture);
+	img_file_init(mlx, "pics/bluestone.png", &player.no_texture);
+	img_file_init(mlx, "pics/redbrick.png", &player.so_texture);
+	img_file_init(mlx, "pics/wood.png", &player.we_texture);
 
 	player.position = new_vf2d(1.5f, 1.5f);
 	player.image = &image;

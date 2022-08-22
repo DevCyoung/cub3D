@@ -18,7 +18,7 @@ int img_draw_pixel(t_image *image, int x, int y, int color)
 {
 	char	*data_addr;
 
-	if (x < 0 || x >= 2048 || y < 0 || y >= 2048)
+	if (x < 0 || x >= WINDOW_SIZE_X || y < 0 || y >= WINDOW_SIZE_Y)
 		return color;
 	data_addr = image->data_addr + y * image->size_line + x * (image->bits_per_pixel / 8);
 	*(unsigned int  *)data_addr = color;
