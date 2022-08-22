@@ -7,6 +7,15 @@ int img_init(void *mlx_ptr, int size_x, int size_y, t_image *image)
 	return 1;	
 }
 
+int img_file_init(void *mlx_ptr, char *file_name, t_image *image)
+{
+	// image->width = 64;
+	// image->height = 64;
+	image->mlx_img = mlx_png_file_to_image(mlx_ptr, file_name, &image->width, &image->height);
+	image->data_addr = mlx_get_data_addr(image->mlx_img, &image->bits_per_pixel, &image->size_line, &image->endian);
+	return 1;
+}
+
 int img_draw_pixel(t_image *image, int x, int y, int color)
 {
 	char	*data_addr;
@@ -16,6 +25,16 @@ int img_draw_pixel(t_image *image, int x, int y, int color)
 	data_addr = image->data_addr + y * image->size_line + x * (image->bits_per_pixel / 8);
 	*(unsigned int  *)data_addr = color;
 	return color;
+}
+
+int img_get_color(t_image *image, int x, int y)
+{
+	char	*data_addr;
+
+	if (x < 0 || x >= 2048 || y < 0 || y >= 2048)
+		return 1;
+	data_addr = image->data_addr + y * image->size_line + x * (image->bits_per_pixel / 8);
+	return *((unsigned int  *)data_addr);
 }
 
 int img_draw_line(t_image *image, t_vi2d start, t_vi2d end, int color)
@@ -122,6 +141,10 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 
 	char			is_found;
 	float			curdist;
+	hit.disth = ray_len_1d.x;
+	hit.distv = ray_len_1d.y;
+
+	hit.is_disth = 0;
 	is_found = 0;
 	curdist = 0;
 	while (is_found == 0 && curdist < max_dist)
@@ -132,6 +155,7 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 			curdist = ray_len_1d.x;
 			hit.disth = ray_len_1d.x;
 			ray_len_1d.x += unit_step_size.x;
+			hit.is_disth = 1;
 		}
 		else
 		{
@@ -139,8 +163,9 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 			curdist = ray_len_1d.y;
 			hit.distv = ray_len_1d.y;
 			ray_len_1d.y += unit_step_size.y;
+			hit.is_disth = 0;
 		}
-		if (map_check.x >= 0 && map_check.x < map_info->size_x && map_check.y >= 0 && map_check.y < map_info->size_y)
+		if (map_check.x >= 0 && map_check.x < MAP_X && map_check.y >= 0 && map_check.y < MAP_Y)
 		{
 			if (map_info->map[map_check.y * map_info->size_x + map_check.x] != 0)
 				is_found = 1;
@@ -150,7 +175,7 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 	if (is_found == 1)
 		hit.is_hit = 1;
 	hit.distance = curdist;
-	hit.hit_point = new_vf2d(start.x + direct.x * curdist, start.y + direct.y * curdist);
+	hit.hit_point = new_vf2d(start.x + direct.x * hit.distance , start.y + direct.y * hit.distance);
 
 	return hit;
 }

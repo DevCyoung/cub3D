@@ -6,6 +6,27 @@
 #define PI		3.14159265359
 #define RADIN	0.0174533
 
+#define WINDOW_SIZE_X 2048
+#define WINDOW_SIZE_Y 1024
+
+#define X_EVENT_KEY_PRESS			2
+#define X_EVENT_KEY_RELEASE			3
+#define X_EVENT_KEY_EXIT           17
+
+#define KEY_A 0
+#define KEY_S 1
+#define KEY_D 2
+#define KEY_W 13
+
+
+#define KEY_LEFT 	123
+#define KEY_RIGHT	124
+
+#define MAP_X		16
+#define MAP_Y		16
+#define per_boxsize	64
+#define per_player	2
+
 typedef struct s_vf2d
 {
 	float	x;
@@ -24,8 +45,11 @@ typedef struct s_image
 	int		bits_per_pixel;
 	int		size_line;
 	int		endian;
+	int		width;
+	int		height;
 	char	*data_addr;
 }	t_image;
+
 
 typedef struct s_object
 {
@@ -33,6 +57,7 @@ typedef struct s_object
 	void	*win;
 	float	pa;
 	t_image *image;
+	t_image *book_texture;
 	t_vf2d	direction;
 	t_vf2d	position;
 }	t_object;
@@ -54,6 +79,7 @@ typedef struct s_raycast_hit
 	t_wall_dir	wall_dir;
 	float		disth;
 	float		distv;
+	char		is_disth;
 }	t_raycast_hit;
 
 typedef struct s_map_info
@@ -65,6 +91,8 @@ typedef struct s_map_info
 
 
 int img_init(void* mlx_ptr, int size_x, int size_y ,t_image *image);
+int img_file_init(void *mlx_ptr, char *file_name, t_image *image);
+
 int	img_draw_pixel(t_image *image, int x, int y, int color);
 int img_draw_line(t_image *image, t_vi2d start, t_vi2d end, int color);
 int img_draw_fill_rectangle(t_image *image, t_vi2d start, t_vi2d len, int color);
@@ -75,6 +103,7 @@ t_vf2d new_vf2d(float x, float y);
 t_vi2d new_vi2d(int x, int y);
 t_vf2d	new_vf2d_multiple(t_vf2d vf2d, float value);
 t_vi2d	new_vi2d_multiple(t_vi2d vi2d, int value);
+int img_get_color(t_image *image, int x, int y);
 
 t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, float max_dist);
 

@@ -2,58 +2,51 @@
 #include <stdio.h>
 
 
-#define WINDOW_SIZE_X 2048
-#define WINDOW_SIZE_Y 1024
 
-#define X_EVENT_KEY_PRESS			2
-#define X_EVENT_KEY_RELEASE			3
-#define X_EVENT_KEY_EXIT           17
-
-#define KEY_A 0
-#define KEY_S 1
-#define KEY_D 2
-#define KEY_W 13
-
-
-#define KEY_LEFT 	123
-#define KEY_RIGHT	124
-
-#define per_boxsize	128
-#define per_player	2
-
-char map[64] = 
+char map[256] = 
 {
-	1,1,1,1,1,1,1,1,
-	1,0,0,0,0,1,0,1,
-	1,0,1,0,0,0,0,1,
-	1,0,1,0,1,0,0,1,
-	1,0,0,0,1,0,0,1,
-	1,0,1,0,0,0,0,1,
-	1,0,0,0,1,1,0,1,
-	1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,
+	1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,
+	1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
+	1,0,0,1,1,0,0,0,1,1,0,0,0,0,0,1,
+	1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,1,1,0,0,0,0,0,0,1,1,1,0,1,
+	1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,
+	1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 };
 
-char	texture[16][16]=
+
+
+char	texture[17][17]=
 {
 	"1111111111111111",
-	"1100011101101101",
-	"1111101101101101",
-	"1101101101101101",
-	"1101101101101101",
-	"1101101101101101",
-	"1101101101101101",
-	"1101101101111101",
-	"1101101101111101",
-	"1101101101111101",
-	"1101101101111101",
-	"1101111101111101",
-	"1101111101101101",
-	"1101111101101101",
-	"1101111101101111",
+	"1000000000000111",
+	"1100000000001001",
+	"1010000000010001",
+	"1001000000100001",
+	"1000100001000001",
+	"1000001010000001",
+	"1000000100000001",
+	"1000001010000001",
+	"1000010001000001",
+	"1000100000100001",
+	"1001000000010001",
+	"1010000000001001",
+	"1100000000000101",
+	"1100000000000011",
 	"1111111111111111",
 };
 
 int	ketmap[4] = {0, 0, 0, 0};
+
 int	keyarrow[2] = {0,0};
 
 int	key_press(int keycode, t_object *_player)
@@ -104,13 +97,13 @@ int main_loop(t_object *player)
 	//draw mini map
 	t_map_info map_info;
 	map_info.map = &map[0];
-	map_info.size_x = 8;
-	map_info.size_y = 8;
+	map_info.size_x = MAP_X;
+	map_info.size_y = MAP_Y;
 	image = player->image;
-	while (y < 8)
+	while (y < MAP_Y)
 	{
 		int x = 0;
-		while (x < 8)
+		while (x < MAP_X)
 		{
 			start.x = x * per_boxsize;
 			start.y = y * per_boxsize;
@@ -121,7 +114,7 @@ int main_loop(t_object *player)
 			len.x = per_boxsize;
 			len.y = per_boxsize;
 			
-			if (map[y * 8 + x] == 1)
+			if (map[y * MAP_X + x] == 1)
 				img_draw_fill_rectangle(image, start, len, 0XFFFFFF);
 			else	
 				img_draw_fill_rectangle(image, start, len, 0X000000);
@@ -184,12 +177,16 @@ int main_loop(t_object *player)
 		player->pa -= RADIN * 2.9f;
 	if (keyarrow[1])
 		player->pa += RADIN * 2.9f;
+	if (player->pa < 0)
+		player->pa += 2 * PI;
+	if (player->pa > 2 * PI)
+		player->pa -= 2 * PI;
 
 	//draw ray
 	float ra = player->pa - 30 * RADIN;
 	//int raycount = 60 * 2;
 	int i = 0;
-	float ssss = 1024 / (float)60;
+	float ssss = WINDOW_SIZE_Y / (float)60;
 
 	
 	
@@ -244,32 +241,47 @@ int main_loop(t_object *player)
 		//box
 		// start = new_vi2d(WINDOW_SIZE_X / 2 + i, lineo);
 		// len	=   new_vi2d(1, lineh);
-		float gd;
-		float tm;
-		float sstep = (float)16 / lineh;
+		//float gd;
+		
+		float sstep = (float)(player->book_texture->width) / lineh;
 
-		if (hit.disth < hit.distv)
+		// if (hit.disth < hit.distv)
+		// {
+		// 	gd = 1.0f;
+		// 	tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * 16);
+		// }
+		// else
+		// {
+		// 	gd = 0.75f;
+		// 	tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * 16);
+		// }
+
+		float tm = 0.0f;
+		float tx = 0.0f;
+
+		if (hit.is_disth == 1)
 		{
-			gd = 1.0f;
-			tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * 16);
+			tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * player->book_texture->width);
 		}
 		else
 		{
-			gd = 0.75f;
-			tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * 16);
+			tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * player->book_texture->width);
 		}
+		//tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * 16);
 
-		float tx = 0.0f;
 		for (int j = lineo; j < (int)(lineh + lineo); j++)
 		{
-			int co = 0;
-			if (texture[(int)tm % 16][(int)tx % 16] == '0')
-				co = 0XFFFFFF;
-			else
-				co = 0XFF00FF;
+			int co = img_get_color(player->book_texture, (int)tm % player->book_texture->width, (int)tx % player->book_texture->height);
+			// int co = 0;
+			// if (texture[(int)tm % MAP_X][(int)tx % MAP_Y] == '0')
+			// 	co = 0XFFFFFF;
+			// else
+			// 	co = 0X0CEF0F;
 			img_draw_pixel(image, WINDOW_SIZE_X / 2 + i, j, co);
-			tx += sstep;
+			tx = tx + sstep;
 		}
+
+
 
 		//img_draw_fill_rectangle(image, start, len, 0XFFFFFF);
 
@@ -300,6 +312,7 @@ int main(void)
 	void	*mlx;
 	void	*win;
 	t_image image;
+	t_image book_texture;
 	t_object player;
 
 	printf("222\n");
@@ -307,8 +320,11 @@ int main(void)
 	win = mlx_new_window(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, "hello world!");
 
 	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &image);
+	img_file_init(mlx, "bookshelf.png", &book_texture);
+
 	player.position = new_vf2d(1.5f, 1.5f);
 	player.image = &image;
+	player.book_texture = &book_texture;
 	player.mlx = mlx;
 	player.win = win;
 	player.pa = 0.0f;
