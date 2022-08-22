@@ -6,8 +6,8 @@
 #define PI		3.14159265359
 #define RADIN	0.0174533
 
-#define WINDOW_SIZE_X 2048
-#define WINDOW_SIZE_Y 1024
+#define WINDOW_SIZE_X 1920
+#define WINDOW_SIZE_Y 1080
 
 #define X_EVENT_KEY_PRESS			2
 #define X_EVENT_KEY_RELEASE			3

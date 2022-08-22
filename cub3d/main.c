@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 08:52:00 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/23 08:57:28 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int main_loop(t_object *player)
 			t_vi2d ip = new_vi2d((int)offset.x, (int)offset.y);
 			if (ip.x < 0 || ip.x >= MAP_X || ip.y < 0 || ip.y >= MAP_Y)
 			{
-				img_draw_pixel(image, x, y, 0XFF0000);
+				img_draw_pixel(image, x, y, 0X80808F);
 			}
 			else if (map[ip.y * MAP_X + ip.x] == 0)
 				img_draw_pixel(image, x, y, 0X000000);
@@ -206,7 +206,7 @@ int main_loop(t_object *player)
 
 	
 	
-	while (i < 1024)
+	while (i < WINDOW_SIZE_X / 2)
 	{
 		
 
@@ -310,7 +310,7 @@ int main_loop(t_object *player)
 		//floor
 		start = new_vi2d(WINDOW_SIZE_X / 2 + i, lineo + lineh);
 		len	= new_vi2d(1, WINDOW_SIZE_Y - lineo + lineh);
-		img_draw_fill_rectangle(image, start, len, 0XFF985C);
+		img_draw_fill_rectangle(image, start, len, 0X808080);
 
 		ra += RADIN / ssss;
 		++i;
