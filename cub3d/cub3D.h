@@ -8,22 +8,24 @@
 
 #define WINDOW_SIZE_X 1920
 #define WINDOW_SIZE_Y 1080
+#define	CAMERA_RANGE				60
+#define MINIMAP_SIZE				3
+#define MINIMAP_BOX_SIZE			8
+
 
 #define X_EVENT_KEY_PRESS			2
 #define X_EVENT_KEY_RELEASE			3
-#define X_EVENT_KEY_EXIT           17
-
+#define X_EVENT_KEY_EXIT            17
 #define KEY_A 0
 #define KEY_S 1
 #define KEY_D 2
 #define KEY_W 13
-
-
 #define KEY_LEFT 	123
 #define KEY_RIGHT	124
 
 #define MAP_X		16
 #define MAP_Y		16
+
 #define per_boxsize	64
 #define per_player	2
 

@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 08:57:28 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/23 10:18:12 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ char map[256] =
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,
 	1,0,1,1,1,1,0,0,0,0,0,0,0,1,0,1,
-	1,0,1,1,1,0,0,0,0,0,0,0,1,0,0,1,
-	1,0,1,1,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,1,1,1,0,1,0,0,0,0,0,1,0,0,1,
+	1,0,1,1,0,0,1,0,0,0,0,1,0,0,0,1,
 	1,0,1,1,0,0,0,0,0,0,1,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,
@@ -29,12 +29,29 @@ char map[256] =
 	1,0,0,1,1,0,1,0,0,0,0,1,1,1,0,1,
 	1,0,0,0,0,1,0,0,0,1,1,1,1,1,0,1,
 	1,0,0,1,0,1,0,0,1,1,1,1,1,1,0,1,
-	1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 };
 
 int	ketmap[4] = {0, 0, 0, 0};
 int	keyarrow[2] = {0,0};
+
+unsigned int AlphaBlend(const unsigned int bg, const unsigned int src)
+{
+   unsigned int a = src >> 24;    /* alpha */
+
+   /* If source pixel is transparent, just return the background */
+   if (0 == a) 
+      return bg;
+
+   /* alpha blending the source and background colors */
+   unsigned int rb = (((src & 0x00ff00ff) * a) +  
+      ((bg & 0x00ff00ff) * (0xff - a))) & 0xff00ff00;
+   unsigned int    g  = (((src & 0x0000ff00) * a) + 
+      ((bg & 0x0000ff00) * (0xff - a))) & 0x00ff0000;
+
+    return (src & 0xff000000) | ((rb | g) >> 8);
+}
 
 int	key_press(int keycode, t_object *_player)
 {
@@ -87,64 +104,7 @@ int main_loop(t_object *player)
 	map_info.size_x = MAP_X;
 	map_info.size_y = MAP_Y;
 	image = player->image;
-	// while (y < MAP_Y)
-	// {
-	// 	int x = 0;
-	// 	while (x < MAP_X)
-	// 	{
-	// 		start.x = x * per_boxsize;
-	// 		start.y = y * per_boxsize;
-
-	// 		start.x = start.x ;
-	// 		start.y = start.y ;
-
-	// 		len.x = per_boxsize;
-	// 		len.y = per_boxsize;
-			
-	// 		if (map[y * MAP_X + x] == 1)
-	// 			img_draw_fill_rectangle(image, start, len, 0XFFFFFF);
-	// 		else	
-	// 			img_draw_fill_rectangle(image, start, len, 0X000000);
-	// 		++x;
-
-	// 	}
-	// 	++y;
-	// }
-
-	int y = 0;
-	float map_step =  8 / (float)500;
-	t_vf2d offset = new_vf2d(player->position.x - 4.0f, player->position.y - 4.0f);
-	printf("%f , %f\n", offset.x, offset.y);
 	
-	y = 0;
-	while (y < 500)
-	{
-		int x = 0;
-		offset.x = player->position.x - 4.0f;
-		while (x < 500)
-		{
-			t_vi2d ip = new_vi2d((int)offset.x, (int)offset.y);
-			if (ip.x < 0 || ip.x >= MAP_X || ip.y < 0 || ip.y >= MAP_Y)
-			{
-				img_draw_pixel(image, x, y, 0X80808F);
-			}
-			else if (map[ip.y * MAP_X + ip.x] == 0)
-				img_draw_pixel(image, x, y, 0X000000);
-			else
-				img_draw_pixel(image, x, y, 0XFFFFFF);
-			offset.x += map_step;
-			++x;
-		}
-		offset.y += map_step;
-		++y;
-	}
-
-	start = new_vi2d((250) - 8, (250) - 8);
-	len	  = new_vi2d(16, 16);
-	img_draw_fill_rectangle(image, start, len, 0X00FFFF00);
-
-	//calc player
-	//add -30 + 30;
 	if (ketmap[0])
 	{
 		t_vf2d dir = new_vf2d(-cosf(player->pa + PI / 2), -sinf(player->pa + PI / 2));
@@ -199,14 +159,12 @@ int main_loop(t_object *player)
 		player->pa -= 2 * PI;
 
 	//draw ray
-	float ra = player->pa - 30 * RADIN;
+	float ra = player->pa - (CAMERA_RANGE / 2.0f) * RADIN;
 	//int raycount = 60 * 2;
 	int i = 0;
-	float ssss = WINDOW_SIZE_Y / (float)60;
-
+	float ssss = WINDOW_SIZE_X / (float)CAMERA_RANGE;
 	
-	
-	while (i < WINDOW_SIZE_X / 2)
+	while (i < WINDOW_SIZE_X)
 	{
 		
 
@@ -218,9 +176,7 @@ int main_loop(t_object *player)
 		{
 			ra -= 2 * PI;
 		}
-		
 
-		
 		t_vf2d dirction = new_vf2d(cosf(ra), sinf(ra));
 
 
@@ -252,7 +208,7 @@ int main_loop(t_object *player)
         float lineo = ((WINDOW_SIZE_Y) / 2) - lineh / 2;		
 
 		//sky
-		start = new_vi2d(WINDOW_SIZE_X / 2 + i, 0);
+		start = new_vi2d(i, 0);
 		len	= new_vi2d(1, lineo);
 		img_draw_fill_rectangle(image, start, len, 0X0067E3);
 
@@ -297,7 +253,7 @@ int main_loop(t_object *player)
 		for (int j = lineo; j < (int)(lineh + lineo); j++)
 		{
 			int co = img_get_color(tt, (int)tm % tt->width, (int)tx % tt->height);
-			img_draw_pixel(image, WINDOW_SIZE_X / 2 + i, j, co);
+			img_draw_pixel(image, i, j, co);
 			tx = tx + sstep;
 		}
 
@@ -308,20 +264,51 @@ int main_loop(t_object *player)
 
 
 		//floor
-		start = new_vi2d(WINDOW_SIZE_X / 2 + i, lineo + lineh);
+		start = new_vi2d(i, lineo + lineh);
 		len	= new_vi2d(1, WINDOW_SIZE_Y - lineo + lineh);
 		img_draw_fill_rectangle(image, start, len, 0X808080);
 
 		ra += RADIN / ssss;
 		++i;
 	}
-
-	//draw player
-	// t_vf2d word_position = new_vf2d_multiple(player->position, per_boxsize);
-	// t_vi2d player_start = casting_vi2d(word_position);
-	// t_vi2d player_len = new_vi2d(per_boxsize >> per_player, per_boxsize >> per_player);
-	// player_start = new_vi2d(player_start.x - player_len.x / 2 , player_start.y - player_len.y / 2);
-	// img_draw_fill_rectangle(image, player_start, player_len, 0X0FFFF00);
+	int y = 0;
+	float map_step_x =  MINIMAP_BOX_SIZE / (float)(WINDOW_SIZE_X / MINIMAP_SIZE);
+	float map_step_y =  MINIMAP_BOX_SIZE / (float)(WINDOW_SIZE_Y / MINIMAP_SIZE);
+	t_vf2d offset = new_vf2d(player->position.x - 4.0f, player->position.y - 4.0f);
+	printf("%f , %f\n", offset.x, offset.y);
+	
+	y = 0;
+	while (y < WINDOW_SIZE_Y / MINIMAP_SIZE)
+	{
+		int x = 0;
+		offset.x = player->position.x - 4.0f;
+		while (x < WINDOW_SIZE_X / MINIMAP_SIZE)
+		{
+			t_vi2d ip = new_vi2d((int)offset.x, (int)offset.y);
+			int color = 0;
+			if (ip.x < 0 || ip.x >= MAP_X || ip.y < 0 || ip.y >= MAP_Y)
+			{
+				color = 0X0080808F;
+			}
+			else if (map[ip.y * MAP_X + ip.x] == 0)
+			{
+				color = 0X00000000;
+			}
+			else
+			{
+				color = 0X00FFFFFF;
+			}
+			img_draw_pixel(image, x, y, AlphaBlend(color, img_get_color(image, x, y)));
+			offset.x += map_step_x;
+			++x;
+		}
+		offset.y += map_step_y;
+		++y;
+	}
+	int p_size = (float)(WINDOW_SIZE_X / MINIMAP_SIZE) / 20;
+	start = new_vi2d(((WINDOW_SIZE_X / MINIMAP_SIZE) / 2) - p_size / 2, ((WINDOW_SIZE_Y / MINIMAP_SIZE) / 2) - p_size / 2);
+	len	  = new_vi2d(p_size, p_size);
+	img_draw_fill_rectangle(image, start, len, 0X00FFFF00);
 	mlx_put_image_to_window(player->mlx, player->win, image->mlx_img, 0, 0);
 	return 1;
 
@@ -333,8 +320,7 @@ int main(void)
 	void	*win;
 	t_image image;
 	t_object player;
-
-	printf("222\n");
+	
 	mlx = mlx_init();
 	win = mlx_new_window(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, "hello world!");
 
@@ -351,14 +337,10 @@ int main(void)
 	player.mlx = mlx;
 	player.win = win;
 	player.pa = 0.0f;
-
-	printf("233\n");
+	
 	mlx_hook(win, X_EVENT_KEY_PRESS, 0, &key_press, &player);
-	printf("235\n");
 	mlx_hook(win, X_EVENT_KEY_RELEASE, 0, &key_release, &player);
-	printf("237\n");
 	mlx_loop_hook(mlx, main_loop, &player);
-	printf("239\n");
 	mlx_loop(mlx);
 	return (0);
 }
