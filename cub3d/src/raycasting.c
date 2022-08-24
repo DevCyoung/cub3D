@@ -6,11 +6,11 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 10:13:56 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 10:16:29 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/24 14:55:35 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../cub3D.h"
+#include "cub3d.h"
 
 float	distance(t_vf2d start, t_vf2d end)
 {
@@ -24,37 +24,6 @@ float	distance(t_vf2d start, t_vf2d end)
 	return dist;
 }
 
-static	raycasting_init_value(t_vf2d unit_step_size, t_vi2d map_check, t_vf2d ray_len_1d, t_vi2d step)
-{
-	unit_step_size = new_vf2d(sqrtf(1 + (direct.y / direct.x) * (direct.y / direct.x)),
-								sqrtf(1 + (direct.x / direct.y) * (direct.x / direct.y)));
-	ray_len_1d = new_vf2d(0,0);
-	map_check = new_vi2d(((int)start.x) , ((int)start.y));
-	step = 	new_vi2d(0,0);
-	
-	if (direct.x < 0)
-	{
-		step.x = -1;
-		ray_len_1d.x = (start.x - (float)map_check.x) * unit_step_size.x;
-	}
-	else
-	{
-		step.x = 1;
-		ray_len_1d.x = (((float)map_check.x + 1) - start.x) * unit_step_size.x;
-	}
-
-	if (direct.y < 0)
-	{
-		step.y = -1;
-		ray_len_1d.y = (start.y - (float)map_check.y) * unit_step_size.y;
-	}
-	else
-	{
-		step.y = 1;
-		ray_len_1d.y = (((float)map_check.y + 1) - start.y) * unit_step_size.y;
-	}
-}
-
 t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, float max_dist)
 {
 	t_raycast_hit	hit;
@@ -65,11 +34,12 @@ t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, floa
 
 	
 	unit_step_size = new_vf2d(sqrtf(1 + (direct.y / direct.x) * (direct.y / direct.x)),
-								sqrtf(1 + (direct.x / direct.y) * (direct.x / direct.y)));
+                                sqrtf(1 + (direct.x / direct.y) * (direct.x / direct.y)));
 	ray_len_1d = new_vf2d(0,0);
 	map_check = new_vi2d(((int)start.x) , ((int)start.y));
 	step = 	new_vi2d(0,0);
-	
+
+
 	if (direct.x < 0)
 	{
 		step.x = -1;

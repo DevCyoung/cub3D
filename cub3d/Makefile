@@ -1,25 +1,31 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    MakeFile                                           :+:      :+:    :+:    #
+#    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: yoseo <yoseo@student.42seoul.kr>           +#+  +:+       +#+         #
+#    By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/09 10:55:55 by yoseo             #+#    #+#              #
-#    Updated: 2022/05/13 09:50:26 by yoseo            ###   ########.fr        #
+#    Updated: 2022/08/24 14:57:35 by yoseo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = cub3D
+NAME = cub3d
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -I./minilibx/
 LFLAGS = -L./minilibx/ -lmlx -framework OpenGL -framework AppKit -lz
 
 MLX = ./minilibx/libmlx.a
 
-SRCS = main.c\
-	   img_draw_pixel.c\
+SRCDIR = src/
+
+SRC  = main.c\
+	   img_draw.c\
+	   img_init.c\
+	   raycasting.c\
 	   vector_helper.c\
+
+SRCS = $(addprefix $(SRCDIR), $(SRC))
 
 OBJS = $(SRCS:.c=.o)
 
@@ -32,7 +38,7 @@ $(MLX) :
 	@make -C minilibx
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c $^
+	$(CC) $(CFLAGS) -c $^ -o $@ -I./include
 
 clean :
 	make -C minilibx clean

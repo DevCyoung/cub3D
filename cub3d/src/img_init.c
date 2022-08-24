@@ -6,11 +6,11 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 10:01:28 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 10:02:05 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/24 14:55:35 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../cub3D.h"
+#include "cub3d.h"
 
 int img_init(void *mlx_ptr, int size_x, int size_y, t_image *image)
 {

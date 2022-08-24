@@ -6,11 +6,11 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/23 10:18:12 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/24 14:55:35 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3D.h"
+#include "cub3d.h"
 #include <stdio.h>
 
 char map[256] = 
@@ -36,21 +36,21 @@ char map[256] =
 int	ketmap[4] = {0, 0, 0, 0};
 int	keyarrow[2] = {0,0};
 
-unsigned int AlphaBlend(const unsigned int bg, const unsigned int src)
+int alphaBlend(int bk, int fr)
 {
-   unsigned int a = src >> 24;    /* alpha */
+	int	color;
+	int	r;
+	int	g;
+	int	b;
 
-   /* If source pixel is transparent, just return the background */
-   if (0 == a) 
-      return bg;
-
-   /* alpha blending the source and background colors */
-   unsigned int rb = (((src & 0x00ff00ff) * a) +  
-      ((bg & 0x00ff00ff) * (0xff - a))) & 0xff00ff00;
-   unsigned int    g  = (((src & 0x0000ff00) * a) + 
-      ((bg & 0x0000ff00) * (0xff - a))) & 0x00ff0000;
-
-    return (src & 0xff000000) | ((rb | g) >> 8);
+	color = 0;
+	r = ((bk & 0X00FF0000) >> 16) / 3 + ((fr & 0X00FF0000) >> 16) / 3;
+	g = ((bk & 0X0000FF00) >> 8) / 3 + ((fr & 0X0000FF00) >> 8) / 3;
+	b = ((bk & 0X000000FF)) / 3 + ((fr & 0X000000FF)) / 3;
+	color |= r << 16;
+	color |= g << 8;
+	color |= b;
+	return	color;
 }
 
 int	key_press(int keycode, t_object *_player)
@@ -298,7 +298,7 @@ int main_loop(t_object *player)
 			{
 				color = 0X00FFFFFF;
 			}
-			img_draw_pixel(image, x, y, AlphaBlend(color, img_get_color(image, x, y)));
+			img_draw_pixel(image, x, y, alphaBlend(color, img_get_color(image, x, y)));
 			offset.x += map_step_x;
 			++x;
 		}
@@ -327,10 +327,10 @@ int main(void)
 	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &image);
 
 	//init_texture
-	img_file_init(mlx, "pics/mossy.png", &player.ea_texture);
-	img_file_init(mlx, "pics/bluestone.png", &player.no_texture);
-	img_file_init(mlx, "pics/redbrick.png", &player.so_texture);
-	img_file_init(mlx, "pics/wood.png", &player.we_texture);
+	img_file_init(mlx, "textures/mossy.png", &player.ea_texture);
+	img_file_init(mlx, "textures/bluestone.png", &player.no_texture);
+	img_file_init(mlx, "textures/redbrick.png", &player.so_texture);
+	img_file_init(mlx, "textures/wood.png", &player.we_texture);
 
 	player.position = new_vf2d(1.5f, 1.5f);
 	player.image = &image;

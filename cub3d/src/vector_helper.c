@@ -1,4 +1,4 @@
-#include "cub3D.h"
+#include "cub3d.h"
 
 t_vf2d casting_vf2d(t_vi2d vi2d)
 {
