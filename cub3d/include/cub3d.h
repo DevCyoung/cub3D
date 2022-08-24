@@ -6,8 +6,8 @@
 #define PI		3.14159265359
 #define RADIN	0.0174533
 
-#define WINDOW_SIZE_X 1920
-#define WINDOW_SIZE_Y 1080
+#define WINDOW_SIZE_X 600
+#define WINDOW_SIZE_Y 600
 #define	CAMERA_RANGE				60
 #define MINIMAP_SIZE				3
 #define MINIMAP_BOX_SIZE			8
@@ -53,6 +53,13 @@ typedef struct s_vi2d
 	int	y;
 }	t_vi2d;
 
+typedef struct s_map_info
+{
+	int		width;
+	int		height;
+	char	*map;
+} 	t_map_info;
+
 typedef struct s_image
 {
 	void	*mlx_img;
@@ -69,6 +76,7 @@ typedef struct s_object
 {
 	void	*mlx;
 	void	*win;
+	t_map_info map_info;
 	float	pa;
 	t_image *image;
 	t_image we_texture;
@@ -77,6 +85,8 @@ typedef struct s_object
 	t_image so_texture;
 	t_vf2d	direction;
 	t_vf2d	position;
+	int	keymap[4];
+	int	keyarrow[2];
 }	t_object;
 
 typedef enum e_wall_dir
@@ -89,22 +99,16 @@ typedef enum e_wall_dir
 
 typedef struct s_raycast_hit
 {
+	t_vf2d		unit_step_size;
+	t_vi2d		map_check;
+	t_vi2d		step;
+	t_vf2d		disthv;
+	char		is_disth;
 	char		is_hit;
 	float		distance;
-	t_vf2d		hit_point;
-	t_vi2d		map_position;
 	t_wall_dir	wall_dir;
-	float		disth;
-	float		distv;
-	char		is_disth;
+	t_vf2d		hit_point;
 }	t_raycast_hit;
-
-typedef struct s_map_info
-{
-	int		size_x;
-	int		size_y;
-	char	*map;
-} 	t_map_info;
 
 /*
 img_draw 
@@ -127,11 +131,41 @@ t_vf2d casting_vf2d(t_vi2d vi2d);
 t_vi2d casting_vi2d(t_vf2d vf2d);
 t_vf2d new_vf2d(float x, float y);
 t_vi2d new_vi2d(int x, int y);
-t_vf2d	new_vf2d_multiple(t_vf2d vf2d, float value);
-t_vi2d	new_vi2d_multiple(t_vi2d vi2d, int value);
+t_vf2d	new_vf2d_multi(t_vf2d vf2d, float value);
+t_vi2d	new_vi2d_multi(t_vi2d vi2d, int value);
+t_vf2d	rad_to_dir(float radin);
+t_vf2d vf2d_add(t_vf2d a, t_vf2d b);
+t_vf2d	vf2d_multi(t_vf2d vf2d, float mul);
 
 /*
 raycasting
 */
 t_raycast_hit raycasting(t_map_info *map_info, t_vf2d start, t_vf2d direct, float max_dist);
+
+/*
+keyevent
+*/
+int	key_press(int keycode, t_object *player);
+int	key_release(int keycode, t_object *_player);
+
+
+int main_loop(t_object *player);
+
+/*
+colorhelper
+*/
+int alphaBlend(int bk, int fr);
+int	img_get_color(t_image *image, int x, int y);
+
+
+/*
+math_helper
+*/
+float	safe_ra(float ra);
+void	ft_bzero(void *s, size_t n);
 float	distance(t_vf2d start, t_vf2d end);
+
+/*
+rendering
+*/
+void	rendering_word(t_object *player);

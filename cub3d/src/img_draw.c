@@ -6,34 +6,25 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 10:03:49 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/24 14:55:35 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/24 22:45:04 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int img_draw_pixel(t_image *image, int x, int y, int color)
+int	img_draw_pixel(t_image *image, int x, int y, int color)
 {
 	char	*data_addr;
 
-	if (x < 0 || x >= WINDOW_SIZE_X || y < 0 || y >= WINDOW_SIZE_Y)
-		return color;
-	data_addr = image->data_addr + y * image->size_line + x * (image->bits_per_pixel / 8);
-	*(unsigned int  *)data_addr = color;
-	return color;
+	if (x < 0 || x >= image->width || y < 0 || y >= image->height)
+		return (color);
+	data_addr = image->data_addr + y * image->size_line
+		+ x * (image->bits_per_pixel / 8);
+	*(unsigned int *)data_addr = color;
+	return (color);
 }
 
-int img_get_color(t_image *image, int x, int y)
-{
-	char	*data_addr;
-
-	if (x < 0 || x >= 2048 || y < 0 || y >= 2048)
-		return 1;
-	data_addr = image->data_addr + y * image->size_line + x * (image->bits_per_pixel / 8);
-	return *((unsigned int  *)data_addr);
-}
-
-int img_draw_line(t_image *image, t_vi2d start, t_vi2d end, int color)
+int	img_draw_line(t_image *image, t_vi2d start, t_vi2d end, int color)
 {
 	t_vi2d	delta;
 	t_vf2d	cur_pos;
@@ -59,15 +50,15 @@ int img_draw_line(t_image *image, t_vi2d start, t_vi2d end, int color)
 		cur_pos.y += inc.y;
 		++i;
 	}
-	return color;
+	return (color);
 }
 
-int img_draw_fill_rectangle(t_image *image, t_vi2d start, t_vi2d len, int color)
+int	img_draw_fill_rectangle(t_image *image, t_vi2d start, t_vi2d len, int color)
 {
 	int	x;
 	int	y;
-	int dirx;
-	int diry;
+	int	dirx;
+	int	diry;
 
 	dirx = start.x + len.x;
 	diry = start.y + len.y;
@@ -77,10 +68,12 @@ int img_draw_fill_rectangle(t_image *image, t_vi2d start, t_vi2d len, int color)
 		x = start.x;
 		while (x < dirx)
 		{
+			if (image->height <= y)
+				return (color);
 			img_draw_pixel(image, x, y, color);
 			++x;
 		}
 		++y;
 	}
-	return color;
+	return (color);
 }

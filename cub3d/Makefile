@@ -6,7 +6,7 @@
 #    By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/09 10:55:55 by yoseo             #+#    #+#              #
-#    Updated: 2022/08/24 14:57:35 by yoseo            ###   ########.fr        #
+#    Updated: 2022/08/24 20:08:59 by yoseo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,12 @@ SRC  = main.c\
 	   img_draw.c\
 	   img_init.c\
 	   raycasting.c\
-	   vector_helper.c\
+	   key_event.c\
+	   main_loop.c\
+	   color_helper.c\
+	   rendering_world.c\
+	   math_helper.c\
+	   vector_helperd.c\
 
 SRCS = $(addprefix $(SRCDIR), $(SRC))
 
