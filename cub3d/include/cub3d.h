@@ -111,6 +111,11 @@ typedef struct s_raycast_hit
 }	t_raycast_hit;
 
 /*
+ parsing
+ */
+int parse(t_object *info);
+
+/*
 img_draw 
 */
 int img_init(void* mlx_ptr, int size_x, int size_y ,t_image *image);
