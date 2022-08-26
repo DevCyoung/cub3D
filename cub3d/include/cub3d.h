@@ -154,7 +154,7 @@ int main_loop(t_object *player);
 /*
 colorhelper
 */
-int alphaBlend(int bk, int fr);
+int alpha_blend(int bk, int fr);
 int	img_get_color(t_image *image, int x, int y);
 
 

@@ -12,7 +12,7 @@
 
 #include "cub3d.h"
 
-int alphaBlend(int bk, int fr)
+int	alpha_blend(int bk, int fr)
 {
 	int	color;
 	int	r;
@@ -26,7 +26,7 @@ int alphaBlend(int bk, int fr)
 	color |= r << 16;
 	color |= g << 8;
 	color |= b;
-	return	color;
+	return (color);
 }
 
 int	img_get_color(t_image *image, int x, int y)
@@ -38,9 +38,4 @@ int	img_get_color(t_image *image, int x, int y)
 	data_addr = image->data_addr + y * image->size_line
 		+ x * (image->bits_per_pixel / 8);
 	return (*((int *)data_addr));
-}
-
-int	to_hex(int r, int g, int b)
-{
-	
 }

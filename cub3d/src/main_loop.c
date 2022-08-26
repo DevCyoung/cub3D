@@ -91,7 +91,7 @@ void	rendering_minimap(t_object *player)
 				color = 0X00000000;
 			else
 				color = 0X00FFFFFF;
-			img_draw_pixel(image, x, y, alphaBlend(color, img_get_color(image, x, y)));
+			img_draw_pixel(image, x, y, alpha_blend(color, img_get_color(image, x, y)));
 			offset.x += map_step_x;
 			++x;
 		}
