@@ -169,3 +169,4 @@ float	distance(t_vf2d start, t_vf2d end);
 rendering
 */
 void	rendering_word(t_object *player);
+void	rendering_minimap(t_object *player);
