@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 19:33:21 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/24 22:43:42 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/26 21:19:51 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,31 +29,30 @@ t_image	*texture_init(t_raycast_hit hit, t_object *player)
 
 static void	rendering_box(t_object *player, t_raycast_hit hit, t_vf2d ho, int x)
 {
-	float	tm;
-	float	tx;
-	float	sstep;
+	t_vf2d	tmx;
+	float	step;
 	t_image	*tt;
-	int		color;
 
 	tt = texture_init(hit, player);
+	tmx.x = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * tt->width);
+	tmx.y = 0;
+	step = (float)(tt->width) / ho.x;
 	if (hit.is_disth == 1)
 	{
-		tm = (int)(((hit.hit_point.y) - (int)(hit.hit_point.y)) * tt->height);
-		sstep = (float)(tt->height) / ho.x;
+		tmx.x = (int)(((hit.hit_point.y) - (int)
+					(hit.hit_point.y)) * tt->height);
+		step = (float)(tt->height) / ho.x;
 	}
-	else
+	while (ho.y < (int)(ho.x + ho.y))
 	{
-		tm = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * tt->width);
-		sstep = (float)(tt->width) / ho.x;
-	}
-	for (int y = ho.y; y < (int)(ho.x + ho.y); y++)
-	{
-		if (y >= player->image->height)
+		if (ho.y >= player->image->height)
 			break ;
-		color = img_get_color(tt, (int)tm % tt->width, (int)tx % tt->height);
-		img_draw_pixel(player->image, x, y, color);
-		tx = tx + sstep;
-	}	
+		img_draw_pixel(player->image, x, ho.y,
+			img_get_color(tt,
+				(int)tmx.x % tt->width, (int)tmx.y % tt->height));
+		tmx.y = tmx.y + step;
+		++ho.y;
+	}
 }
 
 void	rendering_word(t_object *player)

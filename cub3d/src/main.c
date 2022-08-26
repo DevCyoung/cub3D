@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/24 20:11:39 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/26 21:27:38 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ static char	map[256] =
 
 int	init_texture(void *mlx, t_object *player)
 {
-	img_file_init(mlx, "textures/mossy.png", &player->ea_texture);
 	img_file_init(mlx, "textures/bluestone.png", &player->no_texture);
 	img_file_init(mlx, "textures/redbrick.png", &player->so_texture);
+	img_file_init(mlx, "textures/mossy.png", &player->ea_texture);
 	img_file_init(mlx, "textures/wood.png", &player->we_texture);
 	return (1);
 }

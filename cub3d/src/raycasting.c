@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 10:13:56 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/24 22:26:52 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/08/26 21:26:01 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,17 +94,17 @@ static void	wall_dir_init(t_raycast_hit *hit,
 {
 	if (hit->is_disth == 1)
 	{
-		if (direct.x < 0)
-			hit->wall_dir = NO;
-		else
-			hit->wall_dir = SO;
-	}
-	else
-	{
-		if (direct.y < 0)
+		if (direct.x > 0)
 			hit->wall_dir = WE;
 		else
 			hit->wall_dir = EA;
+	}
+	else
+	{
+		if (direct.y > 0)
+			hit->wall_dir = NO;
+		else
+			hit->wall_dir = SO;
 	}
 	hit->hit_point = new_vf2d(start.x + direct.x * hit->distance, \
 			start.y + direct.y * hit->distance);
