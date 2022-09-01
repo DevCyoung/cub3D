@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/26 18:47:27 by yoseo             #+#    #+#             */
-/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 17:19:50 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static int	map_color(t_object *player, t_vi2d pixel)
 	int			color;
 
 	map_info = player->map_info;
-	if (pixel.x < 0 || pixel.x >= MAP_X || pixel.y < 0 || pixel.y >= MAP_Y)
-		color = 0X0080808F;
-	else if (map_info.map[pixel.y * map_info.width + pixel.x] == 0)
+	if (pixel.x < 0 || pixel.x >= map_info.width || pixel.y < 0 || pixel.y >= map_info.height)
+		color = 0X00FFFFFF;
+	else if (map_info.map[pixel.y * map_info.width + pixel.x] == '0')
 		color = 0X00000000;
 	else
 		color = 0X00FFFFFF;
@@ -34,7 +34,7 @@ static void	rendering_player(t_object *player)
 	t_vi2d	len;
 	int		p_size;
 
-	image = player->buff_win;
+	image = &player->buff_win;
 	p_size = (float)(WINDOW_SIZE_X / MINIMAP_SIZE) / 20;
 	start = new_vi2d(((WINDOW_SIZE_X / MINIMAP_SIZE) / 2) - p_size / 2,
 			((WINDOW_SIZE_Y / MINIMAP_SIZE) / 2) - p_size / 2);
@@ -58,10 +58,10 @@ void	rendering_minimap(t_object *player)
 		idx.x = 0;
 		while (idx.x < WINDOW_SIZE_X / MINIMAP_SIZE)
 		{
-			img_draw_pixel(player->buff_win, idx.x, idx.y,
+			img_draw_pixel(&player->buff_win, idx.x, idx.y,
 				alpha_blend(map_color(player,
 						new_vi2d((int)offset.x, (int)offset.y)),
-					img_get_color(player->buff_win, idx.x, idx.y)));
+					img_get_color(&player->buff_win, idx.x, idx.y)));
 			offset.x += map_step.x;
 			++idx.x;
 		}

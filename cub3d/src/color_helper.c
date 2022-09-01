@@ -6,11 +6,22 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 19:20:02 by yoseo             #+#    #+#             */
-/*   Updated: 2022/09/01 14:37:43 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 16:08:18 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+int	rgbtod(int r, int g, int b)
+{
+	int	color;
+
+	color = 0;
+	color |= r << 16;
+	color |= g << 8;
+	color |= b;
+	return (color);
+}
 
 int	alpha_blend(int bk, int fr)
 {

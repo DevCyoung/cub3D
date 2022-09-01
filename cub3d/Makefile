@@ -6,7 +6,7 @@
 #    By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/09 10:55:55 by yoseo             #+#    #+#              #
-#    Updated: 2022/08/26 19:18:06 by yoseo            ###   ########.fr        #
+#    Updated: 2022/09/01 16:15:16 by yoseo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRC  = main.c\
 	   rendering_minimap.c\
 	   math_helper.c\
 	   vector_helperd.c\
+	   parse.c\
 
 SRCS = $(addprefix $(SRCDIR), $(SRC))
 

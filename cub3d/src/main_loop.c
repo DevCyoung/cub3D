@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 18:10:55 by yoseo             #+#    #+#             */
-/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 15:31:05 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,30 @@
 void	player_move(t_object *player, float dx, float dy)
 {
 	t_raycast_hit	hit3;
+	t_raycast_hit	hit4;
 	t_vf2d			move_dir;
 
 	move_dir = new_vf2d(dx, dy);
-	hit3 = raycasting(&player->map_info, player->position, move_dir, 0.3f);
-	if (hit3.is_hit == 0)
+	hit3 = raycasting(&player->map_info, player->position, move_dir, 1.5f);
+	if (hit3.distance > 0.2f)
 		player->position = vf2d_add(
 				vf2d_multi(move_dir, 0.05f), player->position);
 	else
 	{
 		if (hit3.is_disth == 0)
-			player->position.x += move_dir.x * 0.05f;
+		{
+			hit4 = raycasting(&player->map_info, player->position,
+			new_vf2d(move_dir.x, 0), 1.5f);
+			if (hit4.distance > 0.2f)
+				player->position.x += move_dir.x * 0.05f;
+		}
 		else
-			player->position.y += move_dir.y * 0.05f;
+		{
+			hit4 = raycasting(&player->map_info, player->position,
+			new_vf2d(0, move_dir.y), 1.5f);
+			if (hit4.distance > 0.2f)
+				player->position.y += move_dir.y * 0.05f;
+		}
 	}
 }
 
@@ -63,6 +74,6 @@ int	main_loop(t_object *player)
 	rendering_word(player);
 	rendering_minimap(player);
 	mlx_put_image_to_window(player->mlx,
-		player->win, player->buff_win->mlx_img, 0, 0);
+		player->win, player->buff_win.mlx_img, 0, 0);
 	return (1);
 }

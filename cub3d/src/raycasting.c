@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 10:13:56 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/26 21:41:50 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 17:04:19 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ static void	raycast_walk(t_raycast_hit *hit, t_map_info *map, float max_dist)
 		if (hit->map_check.x >= 0 && hit->map_check.x < map->width \
 					&& hit->map_check.y >= 0 && hit->map_check.y < map->height)
 		{
-			if (map->map[hit->map_check.y * map->width + hit->map_check.x] != 0)
+			if (map->map[hit->map_check.y * map->width + hit->map_check.x] != '0')
 				hit->is_hit = 1;
 		}
 	}

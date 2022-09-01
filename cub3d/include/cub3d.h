@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/26 21:06:55 by yoseo             #+#    #+#             */
-/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 17:29:44 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 
 # define PI						3.14159265359
 # define RADIN					0.0174533
-# define WINDOW_SIZE_X			600
-# define WINDOW_SIZE_Y			600
+# define WINDOW_SIZE_X			800
+# define WINDOW_SIZE_Y			800
 # define CAMERA_RANGE			60
 # define MINIMAP_SIZE			3
 # define MINIMAP_BOX_SIZE		8
@@ -67,27 +67,29 @@ typedef struct s_map_info
 typedef struct s_image
 {
 	void	*mlx_img;
+	char	*data_addr;
 	int		bits_per_pixel;
 	int		size_line;
 	int		endian;
 	int		width;
 	int		height;
-	char	*data_addr;
 }	t_image;
 
 typedef struct s_object
 {
 	void		*mlx;
 	void		*win;
-	t_map_info	map_info;
-	float		pa;
-	t_image		*buff_win;
+	t_image		buff_win;
 	t_image		we_texture;
 	t_image		ea_texture;
 	t_image		no_texture;
 	t_image		so_texture;
+	t_map_info	map_info;
 	t_vf2d		direction;
 	t_vf2d		position;
+	float		pa;
+	int			ccolor;
+	int			fcolor;
 	int			keymap[4];
 	int			keyarrow[2];
 }	t_object;
@@ -147,6 +149,7 @@ colorhelper
 */		
 int				alpha_blend(int bk, int fr);
 int				img_get_color(t_image *image, int x, int y);
+int				rgbtod(int r, int g, int b);
 /*		
 math_helper
 */		

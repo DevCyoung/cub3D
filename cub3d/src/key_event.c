@@ -6,19 +6,20 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 18:11:12 by yoseo             #+#    #+#             */
-/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 17:21:03 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+
 int	win_exit(t_object *player)
 {
-	mlx_destroy_image(player->mlx, player->buff_win->mlx_img);
-	mlx_destroy_image(player->mlx, &player->we_texture.mlx_img);
-	mlx_destroy_image(player->mlx, &player->ea_texture.mlx_img);
-	mlx_destroy_image(player->mlx, &player->no_texture.mlx_img);
-	mlx_destroy_image(player->mlx, &player->so_texture.mlx_img);
+	mlx_destroy_image(player->mlx, player->buff_win.mlx_img);
+	mlx_destroy_image(player->mlx, player->we_texture.mlx_img);
+	mlx_destroy_image(player->mlx, player->ea_texture.mlx_img);
+	mlx_destroy_image(player->mlx, player->no_texture.mlx_img);
+	mlx_destroy_image(player->mlx, player->so_texture.mlx_img);
 	mlx_destroy_window(player->mlx, player->win);
 	exit(0);
 	return (0);
