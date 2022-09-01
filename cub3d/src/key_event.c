@@ -12,7 +12,6 @@
 
 #include "cub3d.h"
 
-
 int	win_exit(t_object *player)
 {
 	mlx_destroy_image(player->mlx, player->buff_win.mlx_img);
@@ -21,8 +20,8 @@ int	win_exit(t_object *player)
 	mlx_destroy_image(player->mlx, player->no_texture.mlx_img);
 	mlx_destroy_image(player->mlx, player->so_texture.mlx_img);
 	mlx_destroy_window(player->mlx, player->win);
+	free(player->mlx);
 	exit(0);
-	return (0);
 }
 
 int	key_press(int keycode, t_object *player)

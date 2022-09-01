@@ -26,18 +26,15 @@ void	player_move(t_object *player, float dx, float dy)
 	else
 	{
 		if (hit3.is_disth == 0)
-		{
-			hit4 = raycasting(&player->map_info, player->position,
-			new_vf2d(move_dir.x, 0), 1.5f);
-			if (hit4.distance > 0.2f)
-				player->position.x += move_dir.x * 0.05f;
-		}
+			move_dir = new_vf2d(0.05f * dx, 0);
 		else
+			move_dir = new_vf2d(0, 0.05f * dy);
+		hit4 = raycasting(&player->map_info, player->position,
+				move_dir, 1.0f);
+		if (hit4.distance > 0.2f)
 		{
-			hit4 = raycasting(&player->map_info, player->position,
-			new_vf2d(0, move_dir.y), 1.5f);
-			if (hit4.distance > 0.2f)
-				player->position.y += move_dir.y * 0.05f;
+			player->position.x += move_dir.x;
+			player->position.y += move_dir.y;
 		}
 	}
 }

@@ -63,7 +63,6 @@ static void	raycast_hit_init(t_raycast_hit *hit,
 
 static void	raycast_walk(t_raycast_hit *hit, t_map_info *map, float max_dist)
 {
-	hit->is_hit = 0;
 	while (hit->is_hit == 0 && hit->distance < max_dist)
 	{
 		if (hit->disthv.x < hit->disthv.y)
@@ -83,7 +82,8 @@ static void	raycast_walk(t_raycast_hit *hit, t_map_info *map, float max_dist)
 		if (hit->map_check.x >= 0 && hit->map_check.x < map->width \
 					&& hit->map_check.y >= 0 && hit->map_check.y < map->height)
 		{
-			if (map->map[hit->map_check.y * map->width + hit->map_check.x] != '0')
+			if (map->map[hit->map_check.y * map-> \
+					width + hit->map_check.x] != '0')
 				hit->is_hit = 1;
 		}
 	}
@@ -115,6 +115,7 @@ t_raycast_hit	raycasting(t_map_info *map,
 {
 	t_raycast_hit	hit;
 
+	hit.is_hit = 0;
 	raycast_hit_init(&hit, start, direct);
 	raycast_walk(&hit, map, max_dist);
 	wall_dir_init(&hit, start, direct);

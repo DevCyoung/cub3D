@@ -23,10 +23,24 @@ int ft_strlen(char *str)
 		++len;
 	return (len);
 }
-
-int	parse(t_object *info)
+void	player_pos_init(t_object *info, int x, int y, char dir)
 {
-	FILE *file = fopen("map.cub", "r");
+	info->pa = 0;
+	if (dir == 'S')
+		info->pa = PI / 2;
+	else if (dir == 'W')
+		info->pa = PI;
+	else if (dir == 'N')
+		info->pa = PI + PI / 2;
+	else if (dir == 'E')
+		info->pa = 0;
+	info->position.x = x + 0.5f;
+	info->position.y = y + 0.5f;
+}
+
+int	parse(t_object *info, char *path)
+{
+	FILE *file = fopen(path, "r");
 		
 
 	char	buffa[100];
@@ -87,19 +101,7 @@ int	parse(t_object *info)
 		{
 			if (buffa[i] != '1' && buffa[i] != '0')
 			{
-				info->pa = 0;
-				if (buffa[i] == 'S')
-					info->pa = PI / 2;
-				else if (buffa[i] == 'W')
-					info->pa = PI;
-				else if (buffa[i] == 'N')
-					info->pa = PI + PI / 2;
-				else if (buffa[i] == 'E')
-					info->pa = 0;
-				
-				info->position.x = i + 0.5f;
-				info->position.y = height + 0.5f;
-				printf("%f %f\n", info->position.x, info->position.y);
+				player_pos_init(info, i, height, buffa[i]);
 				buffc[height * width + i] = '0';	
 			}
 			else
@@ -121,8 +123,5 @@ int	parse(t_object *info)
 		}
 		printf("\n");
 	}
-
-	
-	
 	return (0);
 }

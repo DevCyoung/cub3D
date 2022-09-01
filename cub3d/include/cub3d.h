@@ -102,6 +102,11 @@ typedef enum e_wall_dir
 	SO,
 }	t_wall_dir;
 
+typedef enum e_parse_error
+{
+	ERROR = 1,
+}	t_error;
+
 typedef struct s_raycast_hit
 {
 	t_vf2d		unit_step_size;
@@ -118,7 +123,7 @@ typedef struct s_raycast_hit
 /*
  parsing
  */
-int				parse(t_object *info);
+int				parse(t_object *info, char *path);
 /*
 raycasting
 */

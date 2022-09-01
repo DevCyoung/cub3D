@@ -18,7 +18,8 @@ static int	map_color(t_object *player, t_vi2d pixel)
 	int			color;
 
 	map_info = player->map_info;
-	if (pixel.x < 0 || pixel.x >= map_info.width || pixel.y < 0 || pixel.y >= map_info.height)
+	if (pixel.x < 0 || pixel.x >= map_info.width \
+			|| pixel.y < 0 || pixel.y >= map_info.height)
 		color = 0X00FFFFFF;
 	else if (map_info.map[pixel.y * map_info.width + pixel.x] == '0')
 		color = 0X00000000;
