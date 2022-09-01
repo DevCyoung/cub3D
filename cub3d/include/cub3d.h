@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/26 21:06:55 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/26 21:11:26 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # define X_EVENT_KEY_PRESS		2
 # define X_EVENT_KEY_RELEASE	3
 # define X_EVENT_KEY_EXIT		17
+# define KEY_ESC				53
 # define KEY_A					0
 # define KEY_S					1
 # define KEY_D					2
@@ -80,7 +81,7 @@ typedef struct s_object
 	void		*win;
 	t_map_info	map_info;
 	float		pa;
-	t_image		*image;
+	t_image		*buff_win;
 	t_image		we_texture;
 	t_image		ea_texture;
 	t_image		no_texture;
@@ -157,6 +158,10 @@ rendering
 */		
 void			rendering_word(t_object *player);
 void			rendering_minimap(t_object *player);
+/*
+ win_exit
+ */
+int				win_exit(t_object *player);
 /*		
 vector_helper
 */		

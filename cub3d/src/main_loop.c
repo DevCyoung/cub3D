@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 18:10:55 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/26 19:18:46 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,6 @@ int	main_loop(t_object *player)
 	rendering_word(player);
 	rendering_minimap(player);
 	mlx_put_image_to_window(player->mlx,
-		player->win, player->image->mlx_img, 0, 0);
+		player->win, player->buff_win->mlx_img, 0, 0);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 19:33:21 by yoseo             #+#    #+#             */
-/*   Updated: 2022/08/26 21:19:51 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 14:36:51 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ static void	rendering_box(t_object *player, t_raycast_hit hit, t_vf2d ho, int x)
 	}
 	while (ho.y < (int)(ho.x + ho.y))
 	{
-		if (ho.y >= player->image->height)
+		if (ho.y >= player->buff_win->height)
 			break ;
-		img_draw_pixel(player->image, x, ho.y,
+		img_draw_pixel(player->buff_win, x, ho.y,
 			img_get_color(tt,
 				(int)tmx.x % tt->width, (int)tmx.y % tt->height));
 		tmx.y = tmx.y + step;
@@ -73,10 +73,10 @@ void	rendering_word(t_object *player)
 				player->position, rad_to_dir(ra), 15);
 		ho.x = (WINDOW_SIZE_Y / 1.5f) / (hit.distance * cosf(ra - player->pa));
 		ho.y = ((WINDOW_SIZE_Y) / 2) - ho.x / 2;
-		img_draw_fill_rectangle(player->image,
+		img_draw_fill_rectangle(player->buff_win,
 			new_vi2d(i, 0), new_vi2d(1, ho.y), 0X0067E3);
 		rendering_box(player, hit, ho, i);
-		img_draw_fill_rectangle(player->image,
+		img_draw_fill_rectangle(player->buff_win,
 			new_vi2d(i, ho.x + ho.y),
 			new_vi2d(1, WINDOW_SIZE_Y - ho.x + ho.y), 0X808080);
 		ra += RADIN / step;
