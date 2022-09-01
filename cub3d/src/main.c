@@ -6,7 +6,7 @@
 /*   By: yoseo <yoseo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 06:01:09 by yoseo             #+#    #+#             */
-/*   Updated: 2022/09/01 14:37:01 by yoseo            ###   ########.fr       */
+/*   Updated: 2022/09/01 14:41:10 by yoseo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,17 @@ int main(void)
 {
 	void		*mlx;
 	void		*win;
-	t_image		image;
+	//t_image		buff_win;
+	t_image		images[5];
 	t_object	player;
 
 	mlx = mlx_init();
 	win = mlx_new_window(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, "hello world!");
 	ft_bzero(&player, sizeof(player));
-	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &image);
+	img_init(mlx, WINDOW_SIZE_X, WINDOW_SIZE_Y, &images[4]);
 	init_texture(mlx, &player);
 	player.position = new_vf2d(1.5f, 1.5f);
-	player.buff_win = &image;
+	player.buff_win = &images[4];
 	player.mlx = mlx;
 	player.win = win;
 	player.pa = 0.0f;
