@@ -20,8 +20,8 @@
 
 # define PI						3.14159265359
 # define RADIN					0.0174533
-# define WINDOW_SIZE_X			800
-# define WINDOW_SIZE_Y			800
+# define WINDOW_SIZE_X			500
+# define WINDOW_SIZE_Y			500
 # define CAMERA_RANGE			60
 # define MINIMAP_SIZE			3
 # define MINIMAP_BOX_SIZE		8

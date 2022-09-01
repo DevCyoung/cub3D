@@ -41,7 +41,9 @@ static void	rendering_box(t_object *player, t_raycast_hit hit, t_vf2d ho, int x)
 	t_vf2d	tmx;
 	float	step;
 	t_image	tt;
+	int		color;
 
+	color = 0;
 	texture_init(hit, player, &tt);
 	tmx.x = (int)(((hit.hit_point.x) - (int)(hit.hit_point.x)) * tt.width);
 	tmx.y = 0;
@@ -52,13 +54,12 @@ static void	rendering_box(t_object *player, t_raycast_hit hit, t_vf2d ho, int x)
 					(hit.hit_point.y)) * tt.height);
 		step = (float)(tt.height) / ho.x;
 	}
-	while (ho.y < (int)(ho.x + ho.y))
+	while (ho.y < (int)(ho.x + ho.y) && ho.y < player->buff_win.height)
 	{
-		if (ho.y >= player->buff_win.height)
-			break ;
-		img_draw_pixel(&player->buff_win, x, ho.y,
-			img_get_color(&tt,
-				(int)tmx.x % tt.width, (int)tmx.y % tt.height));
+		if (hit.is_hit == 1)
+			color = img_get_color(&tt,
+					(int)tmx.x % tt.width, (int)tmx.y % tt.height);
+		img_draw_pixel(&player->buff_win, x, ho.y, color);
 		tmx.y = tmx.y + step;
 		++ho.y;
 	}
@@ -79,7 +80,7 @@ void	rendering_word(t_object *player)
 	{
 		ra = safe_ra(ra);
 		hit = raycasting(&player->map_info,
-				player->position, rad_to_dir(ra), 18);
+				player->position, rad_to_dir(ra), 5);
 		ho.x = (WINDOW_SIZE_Y / 1.5f) / (hit.distance * cosf(ra - player->pa));
 		ho.y = ((WINDOW_SIZE_Y) / 2) - ho.x / 2;
 		img_draw_fill_rectangle(&player->buff_win,

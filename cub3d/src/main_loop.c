@@ -22,13 +22,13 @@ void	player_move(t_object *player, float dx, float dy)
 	hit3 = raycasting(&player->map_info, player->position, move_dir, 1.5f);
 	if (hit3.distance > 0.2f)
 		player->position = vf2d_add(
-				vf2d_multi(move_dir, 0.05f), player->position);
+				vf2d_multi(move_dir, 0.1f), player->position);
 	else
 	{
 		if (hit3.is_disth == 0)
-			move_dir = new_vf2d(0.05f * dx, 0);
+			move_dir = new_vf2d(0.1f * dx, 0);
 		else
-			move_dir = new_vf2d(0, 0.05f * dy);
+			move_dir = new_vf2d(0, 0.1f * dy);
 		hit4 = raycasting(&player->map_info, player->position,
 				move_dir, 1.0f);
 		if (hit4.distance > 0.2f)
